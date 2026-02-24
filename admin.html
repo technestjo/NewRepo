@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel — Ancient Scripts</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+</head>
+
+<body>
+
+    <!-- ═══ NAVBAR ═══ -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-symbol">𐤀</span>
+            Ancient Scripts
+        </a>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html">← Back to Site</a>
+            <a href="letters.html">Letters</a>
+            <button id="logout-btn" class="btn btn-outline btn-sm nav-admin">Logout</button>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <div class="admin-layout">
+
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Main</div>
+                <a href="#" class="sidebar-link" data-page="page-dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="sidebar-link" data-page="page-letters">
+                    <span class="icon">𐤀</span> All Letters
+                </a>
+                <a href="#" class="sidebar-link" data-page="page-add" id="add-new-btn">
+                    <span class="icon">＋</span> Add New Letter
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Data</div>
+                <a href="#" class="sidebar-link" id="export-btn">
+                    <span class="icon">⬇</span> Export JSON
+                </a>
+                <label class="sidebar-link" style="cursor:pointer">
+                    <span class="icon">⬆</span> Import JSON
+                    <input type="file" id="import-file" accept=".json" class="sr-only" />
+                </label>
+                <a href="#" class="sidebar-link" id="reset-data-btn" style="color:var(--text-muted)">
+                    <span class="icon">↺</span> Reset to Defaults
+                </a>
+            </div>
+            <div class="sidebar-section" style="margin-top:auto;border-top:1px solid var(--border);padding-top:20px">
+                <div style="padding:12px;font-size:0.75rem;color:var(--text-muted);line-height:1.7">
+                    Logged in as<br>
+                    <strong style="color:var(--gold)">Admin</strong>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN CONTENT ═══ -->
+        <main class="admin-main">
+
+            <!-- ─── PAGE: Dashboard ─── -->
+            <div class="admin-page" id="page-dashboard">
+                <h1 class="admin-page-title">Dashboard</h1>
+                <p class="admin-page-subtitle">Overview of the Ancient Scripts archive.</p>
+
+                <div class="admin-stats">
+                    <div class="admin-stat-card">
+                        <div class="stat-val" id="stat-total">—</div>
+                        <div class="stat-lbl">Total Letters</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-val" id="stat-stages">—</div>
+                        <div class="stat-lbl">Total Stages</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-val" id="stat-civs">—</div>
+                        <div class="stat-lbl">Civilizations</div>
+                    </div>
+                </div>
+
+                <h3 style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--papyrus);margin-bottom:16px">Recent
+                    Letters</h3>
+                <div id="recent-letters"></div>
+            </div>
+
+            <!-- ─── PAGE: All Letters ─── -->
+            <div class="admin-page" id="page-letters">
+                <h1 class="admin-page-title">All Letters</h1>
+                <p class="admin-page-subtitle">Manage the letter archive — edit, delete, or add new entries.</p>
+
+                <div class="admin-tools">
+                    <div class="search-input-wrap" style="max-width:320px">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="admin-search" class="search-input" placeholder="Search letters…"
+                            autocomplete="off" />
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="add-new-from-list">+ Add New Letter</button>
+                </div>
+
+                <div style="overflow-x:auto">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Meaning</th>
+                                <th>Stages</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="letters-tbody">
+                            <!-- Populated by admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ─── PAGE: Add / Edit Letter ─── -->
+            <div class="admin-page" id="page-add">
+                <h1 class="admin-page-title" id="form-title">Add New Letter</h1>
+                <p class="admin-page-subtitle">Fill in the fields below. Stages with SVG drawings can be added after
+                    saving via JSON import.</p>
+
+                <form id="letter-form" class="admin-form" novalidate>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-nameEn">English Name *</label>
+                            <input type="text" id="form-nameEn" class="form-input" placeholder="e.g. Aleph" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-nameAr">Arabic Name *</label>
+                            <input type="text" id="form-nameAr" class="form-input" placeholder="e.g. ألف" dir="rtl" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-meaning">Meaning (EN)</label>
+                            <input type="text" id="form-meaning" class="form-input" placeholder="e.g. Ox / Bull" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-meaningAr">Meaning (AR)</label>
+                            <input type="text" id="form-meaningAr" class="form-input" placeholder="e.g. ثور / بقرة"
+                                dir="rtl" />
+                        </div>
+                    </div>
+
+                    <!-- ── Symbol Picker ── -->
+                    <div class="form-group"
+                        style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                            <label class="form-label" style="margin:0">Symbol Picker</label>
+                            <div
+                                style="display:flex;gap:8px;align-items:center;font-size:.8rem;color:var(--text-muted)">
+                                Set for:
+                                <select id="sym-pick-target" class="form-select"
+                                    style="padding:4px 10px;font-size:.8rem;width:auto">
+                                    <option value="ph">Phoenician</option>
+                                    <option value="ar">Arabic</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="symbol-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+                            <!-- Populated by admin.js -->
+                        </div>
+                        <div style="display:flex;align-items:center;gap:16px">
+                            <div style="font-size:.75rem;color:var(--text-muted)">Or type manually:</div>
+                            <input type="text" id="form-phSymbol" class="form-input" placeholder="𐤀 Phoenician"
+                                style="flex:1;max-width:160px" />
+                            <input type="text" id="form-arSymbol" class="form-input" placeholder="أ Arabic" dir="rtl"
+                                style="flex:1;max-width:160px" />
+                        </div>
+                        <div id="symbol-preview"
+                            style="margin-top:12px;min-height:40px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--bg);border-radius:var(--radius-sm)">
+                            <span style="font-size:.8rem;color:var(--text-muted)">Pick a symbol above</span>
+                        </div>
+                    </div>
+
+                    <!-- ── Letter Image Upload ── -->
+                    <div class="form-group"
+                        style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px">
+                        <label class="form-label" style="margin-bottom:12px">Letter Image / Photo <span
+                                style="color:var(--text-muted);font-weight:400">(optional, max 500 KB)</span></label>
+                        <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+                            <div>
+                                <input type="file" id="form-image-upload" accept="image/*" style="display:none" />
+                                <label for="form-image-upload" class="btn btn-outline"
+                                    style="cursor:pointer;display:inline-flex;align-items:center;gap:8px">
+                                    📷 Choose Image
+                                </label>
+                                <button type="button" id="form-image-clear" class="btn btn-sm btn-danger"
+                                    style="margin-left:8px">✕ Clear</button>
+                                <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px">Supports JPG, PNG,
+                                    WebP, GIF</p>
+                            </div>
+                            <div id="image-preview-area" style="display:flex;flex-direction:column;align-items:center">
+                                <span style="font-size:.8rem;color:var(--text-muted)">No image selected</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-civ">Civilization</label>
+                            <select id="form-civ" class="form-select">
+                                <option value="Phoenician / Canaanite">Phoenician / Canaanite</option>
+                                <option value="Proto-Sinaitic">Proto-Sinaitic</option>
+                                <option value="Aramaic">Aramaic</option>
+                                <option value="Nabataean">Nabataean</option>
+                                <option value="Egyptian Hieroglyphic">Egyptian Hieroglyphic</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-order">Display Order</label>
+                            <input type="number" id="form-order" class="form-input" placeholder="1–22" min="1"
+                                max="999" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="form-desc">Description (EN)</label>
+                        <textarea id="form-desc" class="form-textarea"
+                            placeholder="Historical description of the letter…"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="form-descAr">Description (AR)</label>
+                        <textarea id="form-descAr" class="form-textarea" placeholder="وصف تاريخي للحرف…"
+                            dir="rtl"></textarea>
+                    </div>
+
+
+                    <!-- ── Stage Manager ── -->
+                    <div style="margin-bottom:28px">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                            <div>
+                                <div
+                                    style="font-family:'Cinzel',serif;font-size:1rem;color:var(--papyrus);margin-bottom:4px">
+                                    🏺 Evolution Stages
+                                </div>
+                                <div style="font-size:.78rem;color:var(--text-muted)">
+                                    Add the letter's evolution journey stages. Each stage can have a name, period,
+                                    description, and an image.
+                                </div>
+                            </div>
+                            <button type="button" id="add-stage-btn" class="btn btn-outline"
+                                style="white-space:nowrap;gap:6px">
+                                + Add Stage
+                            </button>
+                        </div>
+                        <div id="stages-editor">
+                            <!-- Populated by admin.js -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Letter</button>
+                        <button type="button" class="btn btn-outline" id="cancel-form-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script src="js/admin.js"></script>
+    <script>
+        // Wire the "Add from list" button — delegates to admin.js sidebar handler
+        document.getElementById('add-new-from-list')?.addEventListener('click', () => {
+            document.getElementById('add-new-btn')?.click();
+        });
+    </script>
+</body>
+
+</html>

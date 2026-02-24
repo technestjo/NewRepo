@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ancient Letters Explorer — Ancient Scripts</title>
+    <meta name="description"
+        content="Browse and explore ancient Phoenician, Canaanite and Aramaic letters. Click any letter to see its full evolutionary journey." />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+    <link rel="stylesheet" href="css/features.css" />
+</head>
+
+<body>
+
+    <!-- ═══ NAVBAR ═══ -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-symbol">𐤀</span>
+            Ancient Scripts
+        </a>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="letters.html" class="active" data-en="Letters" data-ar="الحروف">Letters</a>
+            <a href="admin-login.html" class="nav-admin">⚙ Admin</a>
+        </div>
+        <!-- Language Toggle -->
+        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px">
+            <button data-lang-toggle="en" class="lang-btn active"
+                style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s">EN</button>
+            <button data-lang-toggle="ar" class="lang-btn"
+                style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:Amiri,serif">عر</button>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ═══ PAGE HERO ═══ -->
+    <header class="page-hero">
+        <div class="hero-badge animate-fade-down" style="margin-bottom:18px">
+            <span data-en="• Phoenician · Canaanite · Proto-Sinaitic" data-ar="• فينيقي · كنعاني · سينائي مبكر">•
+                Phoenician &nbsp;·&nbsp; Canaanite &nbsp;·&nbsp; Proto-Sinaitic</span>
+        </div>
+        <h1 class="animate-fade-up"
+            style="font-family:'Cinzel Decorative',serif; font-size:clamp(2rem,5vw,3.2rem); background:linear-gradient(135deg,var(--papyrus),var(--gold),var(--stone)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;"
+            data-en="Ancient Letter Explorer" data-ar="مستكشف الحروف القديمة">
+            Ancient Letter Explorer
+        </h1>
+        <p class="animate-fade-up"
+            style="font-family:'Amiri',serif; font-size:1.4rem; color:var(--gold); direction:rtl; margin-top:8px; opacity:.85">
+            مستكشف الحروف القديمة
+        </p>
+        <p class="animate-fade-up delay-2"
+            style="max-width:560px; margin:14px auto 0; color:var(--text-muted); line-height:1.7"
+            data-en="Click any letter to reveal its full 4,000-year evolution journey — from hieroglyph to modern alphabet."
+            data-ar="اضغط على أي حرف لاكتشاف رحلة تطوره عبر 4000 عام — من الهيروغليفية وحتى الأبجدية الحديثة.">
+            Click any letter to reveal its full 4,000-year evolution journey — from hieroglyph to modern alphabet.
+        </p>
+    </header>
+
+    <!-- ═══ LETTERS SECTION ═══ -->
+    <section class="section" style="padding-top:32px">
+        <div class="container">
+
+            <!-- Progress Bar -->
+            <div class="progress-bar-wrap reveal" id="progress-wrap">
+                <div class="progress-info">
+                    <div class="progress-label" id="progress-label-text">0 of 0 letters explored</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="progress-pct" id="progress-pct">0%</div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" id="filter-tabs">
+                <button class="filter-tab active" data-filter="all"><span data-en="All" data-ar="الكل">All</span> <span
+                        class="tab-count">—</span></button>
+                <button class="filter-tab" data-filter="favorites">★ <span data-en="Favourites"
+                        data-ar="المفضلة">Favourites</span> <span class="tab-count">0</span></button>
+                <button class="filter-tab" data-filter="explored">✓ <span data-en="Explored"
+                        data-ar="المستكشفة">Explored</span> <span class="tab-count">0</span></button>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="search-bar reveal">
+                <div class="search-input-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" class="search-input"
+                        placeholder="Search by name, meaning, or code…" autocomplete="off" />
+                </div>
+                <select id="sort-select" class="filter-select">
+                    <option value="order" data-en="Sort: Original Order" data-ar="الترتيب: الأصلي">Sort: Original Order
+                    </option>
+                    <option value="name" data-en="Sort: A → Z" data-ar="الترتيب: أ ← ي">Sort: A → Z</option>
+                    <option value="code" data-en="Sort: By Code" data-ar="الترتيب: الرمز">Sort: By Code</option>
+                </select>
+            </div>
+
+            <!-- Letters Grid -->
+            <div class="letters-grid" id="letters-grid" aria-live="polite">
+                <div class="letter-card shimmer" style="height:320px;opacity:.35"></div>
+                <div class="letter-card shimmer" style="height:320px;opacity:.35"></div>
+                <div class="letter-card shimmer" style="height:320px;opacity:.35"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══ MODAL ═══ -->
+    <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true">
+        <div class="modal" id="modal-content"></div>
+    </div>
+
+    <!-- ═══ QUIZ FAB ═══ -->
+    <button class="quiz-fab" id="quiz-fab" title="Quick Quiz" aria-label="Open quiz">🎓</button>
+
+    <div class="quiz-panel" id="quiz-panel">
+        <div class="quiz-header">
+            <div>
+                <div class="quiz-title">Letter Quiz</div>
+                <div class="quiz-score" id="quiz-score-el">0/0</div>
+            </div>
+            <button id="quiz-close"
+                style="color:var(--text-muted);background:none;border:none;font-size:1.1rem;cursor:pointer">✕</button>
+        </div>
+        <div class="quiz-symbol" id="quiz-symbol">𐤀</div>
+        <div class="quiz-question" id="quiz-question">Loading…</div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-result" id="quiz-result"></div>
+        <button class="btn btn-outline btn-sm" id="quiz-next-q" style="width:100%;margin-top:14px">Next Question
+            →</button>
+    </div>
+
+    <!-- ═══ BACK TO TOP ═══ -->
+    <button id="back-top" title="Back to top" aria-label="Back to top">↑</button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">Ancient Scripts</div>
+        <div class="footer-links">
+            <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="letters.html" data-en="Letters" data-ar="الحروف">Letters</a>
+            <a href="admin-login.html" data-en="Admin" data-ar="لوحة التحكم">Admin</a>
+        </div>
+    </footer>
+
+    <script src="js/database.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/cursor.js"></script>
+    <script src="js/lang.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

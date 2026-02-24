@@ -1,0 +1,527 @@
+/* ============================================================
+   css/animations.css  –  Keyframes & Motion Design
+   ============================================================ */
+
+/* ── Entry Animations ── */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(32px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.88);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ── Continuous ── */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.85));
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotateSlow {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* SVG Stroke-drawing effect */
+@keyframes drawStroke {
+    from {
+        stroke-dashoffset: 1000;
+        opacity: 0;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+/* Letter morph between stages */
+@keyframes morphIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) rotate(-8deg);
+        filter: blur(6px);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.05) rotate(1deg);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes morphOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.15) rotate(6deg);
+        filter: blur(6px);
+    }
+}
+
+/* Timeline progress fill */
+@keyframes progressFill {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+/* Particle drift */
+@keyframes particleDrift {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.7;
+    }
+
+    90% {
+        opacity: 0.2;
+    }
+
+    100% {
+        transform: translateY(-100vh) translateX(var(--drift)) rotate(540deg);
+        opacity: 0;
+    }
+}
+
+/* Ripple on card click */
+@keyframes ripple {
+    from {
+        transform: scale(0);
+        opacity: 0.6;
+    }
+
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Stage dot bounce */
+@keyframes dotBounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.35);
+    }
+
+    70% {
+        transform: scale(0.92);
+    }
+}
+
+/* Hero title reveal — letter by letter */
+@keyframes letterReveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px) rotateX(-40deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+    }
+}
+
+/* Scan line sweep */
+@keyframes scanLine {
+    0% {
+        top: 0%;
+        opacity: 0.6;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Gold orb ambient */
+@keyframes orbPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.15;
+    }
+
+    50% {
+        transform: scale(1.18);
+        opacity: 0.28;
+    }
+}
+
+/* ── Applied Classes ── */
+.animate-fade-up {
+    animation: fadeSlideUp 0.7s ease both;
+}
+
+.animate-fade-down {
+    animation: fadeSlideDown 0.6s ease both;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease both;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-slide-left {
+    animation: slideInLeft 0.7s ease both;
+}
+
+.animate-slide-right {
+    animation: slideInRight 0.7s ease both;
+}
+
+.animate-float {
+    animation: float 3.8s ease-in-out infinite;
+}
+
+.animate-glow {
+    animation: glow 2.5s ease-in-out infinite;
+}
+
+/* Stagger delays */
+.delay-1 {
+    animation-delay: 0.1s !important;
+}
+
+.delay-2 {
+    animation-delay: 0.2s !important;
+}
+
+.delay-3 {
+    animation-delay: 0.35s !important;
+}
+
+.delay-4 {
+    animation-delay: 0.5s !important;
+}
+
+.delay-5 {
+    animation-delay: 0.65s !important;
+}
+
+.delay-6 {
+    animation-delay: 0.8s !important;
+}
+
+/* Scroll-triggered (IntersectionObserver adds .is-visible) */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-left.is-visible,
+.reveal-right.is-visible {
+    opacity: 1;
+    transform: translate(0);
+}
+
+/* Card SVG draw animation */
+.svg-draw path,
+.svg-draw circle,
+.svg-draw ellipse,
+.svg-draw rect {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawStroke 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.svg-draw path:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.svg-draw path:nth-child(3) {
+    animation-delay: 0.30s;
+}
+
+.svg-draw path:nth-child(4) {
+    animation-delay: 0.45s;
+}
+
+.svg-draw path:nth-child(5) {
+    animation-delay: 0.60s;
+}
+
+.svg-draw path:nth-child(6) {
+    animation-delay: 0.75s;
+}
+
+.svg-draw path:nth-child(7) {
+    animation-delay: 0.90s;
+}
+
+.svg-draw circle:nth-child(2) {
+    animation-delay: 0.20s;
+}
+
+.svg-draw circle:nth-child(3) {
+    animation-delay: 0.40s;
+}
+
+.svg-draw ellipse:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+.svg-draw ellipse:nth-child(3) {
+    animation-delay: 0.45s;
+}
+
+/* Stage morph */
+.stage-entering {
+    animation: morphIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.stage-leaving {
+    animation: morphOut 0.32s ease both;
+}
+
+/* Shimmer skeleton */
+.shimmer {
+    background: linear-gradient(90deg, var(--surface) 25%, rgba(212, 175, 55, 0.08) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite;
+}
+
+/* Gold ambient orbs (decorative) */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    animation: orbPulse 5s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    top: -200px;
+    left: -200px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 400px;
+    height: 400px;
+    bottom: -100px;
+    right: -100px;
+    animation-delay: 2.5s;
+}
+
+/* Particle canvas overlay */
+#hero-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Ripple effect container */
+.ripple-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.25);
+    transform: scale(0);
+    animation: ripple 0.7s ease-out;
+    width: 80px;
+    height: 80px;
+    margin: -40px;
+    pointer-events: none;
+}
+
+/* Loading spinner */
+.spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    animation: spin 0.8s linear infinite;
+}
+
+/* Hero letter floating symbols */
+.hero-bg-letters {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.hero-bg-letter {
+    position: absolute;
+    font-size: 4rem;
+    opacity: 0.04;
+    color: var(--gold);
+    font-family: serif;
+    animation: particleDrift linear infinite;
+}
+
+/* Journey auto-play indicator */
+.autoplay-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--gold);
+    animation: spin 3s linear infinite;
+}

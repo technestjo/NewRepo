@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ancient-scripts
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    plan: free

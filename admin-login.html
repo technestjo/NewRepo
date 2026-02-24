@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login — Ancient Scripts</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+</head>
+
+<body>
+
+    <main class="login-page">
+        <div class="login-card animate-scale-in">
+
+            <!-- Logo -->
+            <div class="login-logo">
+                <span class="symbol animate-float">𐤀</span>
+                <h1>Admin Scribes</h1>
+                <p>Restricted Access — Ancient Scripts</p>
+            </div>
+
+            <!-- Error message -->
+            <div class="login-error" id="login-error">
+                ✗ &nbsp; Incorrect username or password. Please try again.
+            </div>
+
+            <!-- Form -->
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label class="form-label" for="login-username">Username</label>
+                    <input type="text" id="login-username" class="form-input" autocomplete="username"
+                        placeholder="Enter username" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <div style="position:relative">
+                        <input type="password" id="login-password" class="form-input" autocomplete="current-password"
+                            placeholder="Enter password" style="padding-right:48px" required />
+                        <button type="button" id="toggle-pw"
+                            style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:1rem;background:none;border:none;cursor:pointer;padding:0"
+                            aria-label="Show/hide password">👁</button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn" id="login-btn">
+                    Enter the Archive
+                </button>
+            </form>
+
+            <!-- Hint removed for security -->
+            <p style="text-align:center;margin-top:8px">
+                <a href="index.html" style="color:var(--text-muted);font-size:0.8rem;">← Back to site</a>
+            </p>
+        </div>
+    </main>
+
+    <script src="js/database.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/cursor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Already logged in? redirect
+            if (LetterDB.isLoggedIn()) {
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            const form = document.getElementById('login-form');
+            const errEl = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+            const pwInput = document.getElementById('login-password');
+            const togglePw = document.getElementById('toggle-pw');
+
+            // Show/hide password
+            togglePw.addEventListener('click', () => {
+                pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
+                togglePw.textContent = pwInput.type === 'password' ? '👁' : '🙈';
+            });
+
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+                const username = document.getElementById('login-username').value.trim();
+                const password = pwInput.value;
+
+                btn.disabled = true;
+                btn.textContent = 'Verifying…';
+
+                // Simulate a tiny delay for feel
+                setTimeout(() => {
+                    if (LetterDB.login(username, password)) {
+                        btn.textContent = '✓ Authenticated!';
+                        btn.style.background = 'linear-gradient(135deg,#3ECF5F,#1E8A3C)';
+                        setTimeout(() => { window.location.href = 'admin.html'; }, 600);
+                    } else {
+                        errEl.classList.add('show');
+                        btn.disabled = false;
+                        btn.textContent = 'Enter the Archive';
+                        // Shake the card
+                        const card = document.querySelector('.login-card');
+                        card.style.animation = 'none';
+                        card.offsetHeight; // reflow
+                        card.style.animation = 'shake 0.4s ease';
+                    }
+                }, 500);
+            });
+        });
+    </script>
+    <style>
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-10px);
+            }
+
+            40% {
+                transform: translateX(10px);
+            }
+
+            60% {
+                transform: translateX(-8px);
+            }
+
+            80% {
+                transform: translateX(6px);
+            }
+        }
+    </style>
+</body>
+
+</html>
