@@ -25,8 +25,11 @@
             <a href="letters.html" class="active" data-en="Letters" data-ar="الحروف">Letters</a>
             <a href="admin-login.html" class="nav-admin">⚙ Admin</a>
         </div>
-        <!-- Language Toggle -->
         <div style="display:flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px">
+            <button id="audio-toggle-btn" class="audio-toggle-btn"
+                style="padding:4px 10px;border-radius:999px;border:none;background:var(--surface);color:var(--text-muted);font-size:.70rem;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:4px">
+                🔇 <span data-en="Unmute" data-ar="تشغيل الصوت">Unmute</span>
+            </button>
             <button data-lang-toggle="en" class="lang-btn active"
                 style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s">EN</button>
             <button data-lang-toggle="ar" class="lang-btn"
@@ -150,6 +153,8 @@
 
     <script src="js/database.js"></script>
     <script src="js/particles.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/quiz.js"></script>
     <script src="js/cursor.js"></script>
     <script src="js/lang.js"></script>
     <script src="js/app.js"></script>

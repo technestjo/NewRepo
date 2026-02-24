@@ -176,6 +176,19 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProgress();
     renderGrid();
 
+    // ══════════════════════════════════════════════
+    // GLOBAL UI EVENTS
+    // ══════════════════════════════════════════════
+    document.querySelectorAll('.audio-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (typeof AudioFX !== 'undefined') AudioFX.toggleMute();
+        });
+    });
+
+    if (typeof AudioFX !== 'undefined') {
+        AudioFX.updateUI();
+    }
+
     // Filter tabs
     filterTabs?.querySelectorAll('.filter-tab').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -377,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderModal();
             modalOverlay.classList.add('open');
             document.body.style.overflow = 'hidden';
+            if (typeof AudioFX !== 'undefined') AudioFX.playStoneThud();
             modalContent.querySelector('.modal-close')?.focus();
         } catch (err) {
             console.error('[AncientScripts] Modal render error:', err);
@@ -458,7 +472,11 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="journey-stage-display" id="modal-stage-display">
-          <div class="stage-svg-area" id="modal-stage-visual">
+          <div class="stage-svg-area" id="modal-stage-visual" style="position:relative">
+            <button id="modal-draw-btn" class="btn btn-outline" style="position:absolute;top:10px;left:10px;z-index:10;padding:6px 12px;font-size:0.8rem;background:rgba(0,0,0,0.5)">🖌️ Try Drawing</button>
+            <button id="modal-draw-clear" class="btn btn-outline" style="position:absolute;top:10px;left:130px;z-index:10;padding:6px 12px;font-size:0.8rem;display:none;background:rgba(0,0,0,0.5)">🗑️ Clear</button>
+            <canvas id="modal-draw-canvas" width="400" height="400" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:8;pointer-events:none;opacity:0;transition:opacity 0.3s;background:rgba(10,12,18,0.7);border-radius:12px"></canvas>
+            
             ${stage.imageBase64 && !stage.svgContent
                 ? `<img src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">`
                 : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>`}
@@ -564,6 +582,91 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 2500);
         });
 
+        // Draw Canvas Feature
+        const drawBtn = document.getElementById('modal-draw-btn');
+        const drawClearBtn = document.getElementById('modal-draw-clear');
+        const drawCanvas = document.getElementById('modal-draw-canvas');
+        if (drawBtn && drawCanvas) {
+            const ctx = drawCanvas.getContext('2d');
+            let isDrawing = false;
+            let drawMode = false;
+
+            const resizeCanvas = () => {
+                const rect = drawCanvas.parentElement.getBoundingClientRect();
+                drawCanvas.width = rect.width;
+                drawCanvas.height = rect.height;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = 12; // thick ancient brush
+                ctx.strokeStyle = 'rgba(212,175,55,0.85)'; // gold
+                ctx.shadowColor = 'rgba(212,175,55,0.5)';
+                ctx.shadowBlur = 10;
+            };
+
+            const startDraw = (e) => {
+                if (!drawMode) return;
+                isDrawing = true;
+                const rect = drawCanvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                e.preventDefault();
+            };
+
+            const draw = (e) => {
+                if (!isDrawing || !drawMode) return;
+                const rect = drawCanvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                if (window.AudioFX && Math.random() < 0.1) AudioFX.playStoneScrape(); // random scrape noise while drawing
+                e.preventDefault();
+            };
+
+            const stopDraw = () => {
+                isDrawing = false;
+            };
+
+            drawBtn.addEventListener('click', () => {
+                drawMode = !drawMode;
+                if (drawMode) {
+                    drawBtn.innerHTML = '✕ Close Drawing';
+                    drawBtn.style.background = 'var(--gold)';
+                    drawBtn.style.color = 'var(--surface)';
+                    drawCanvas.style.opacity = '1';
+                    drawCanvas.style.pointerEvents = 'auto';
+                    drawClearBtn.style.display = 'block';
+                    resizeCanvas();
+                    if (document.getElementById('modal-stage-svg')) document.getElementById('modal-stage-svg').style.opacity = '0.3'; // dim background
+                } else {
+                    drawBtn.innerHTML = '🖌️ Try Drawing';
+                    drawBtn.style.background = 'rgba(0,0,0,0.5)';
+                    drawBtn.style.color = 'var(--text)';
+                    drawCanvas.style.opacity = '0';
+                    drawCanvas.style.pointerEvents = 'none';
+                    drawClearBtn.style.display = 'none';
+                    if (document.getElementById('modal-stage-svg')) document.getElementById('modal-stage-svg').style.opacity = '1';
+                }
+            });
+
+            drawClearBtn.addEventListener('click', () => {
+                ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                if (window.AudioFX) AudioFX.playDustChime();
+            });
+
+            drawCanvas.addEventListener('mousedown', startDraw);
+            drawCanvas.addEventListener('mousemove', draw);
+            window.addEventListener('mouseup', stopDraw);
+
+            drawCanvas.addEventListener('touchstart', startDraw, { passive: false });
+            drawCanvas.addEventListener('touchmove', draw, { passive: false });
+            window.addEventListener('touchend', stopDraw);
+
+            window.addEventListener('resize', () => { if (drawMode) resizeCanvas(); });
+        }
+
         // Timeline dots
         document.querySelectorAll('#modal-timeline .timeline-step').forEach(step => {
             step.addEventListener('click', () => { stopAuto(); currentStage = parseInt(step.dataset.stage); updateStageDisplay(stages); });
@@ -618,6 +721,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (svg) {
                     svg.classList.add('stage-entering', 'svg-draw');
                     setTimeout(() => svg.classList.remove('stage-entering', 'svg-draw'), 640);
+                }
+                if (typeof AudioFX !== 'undefined') AudioFX.playStoneScrape();
+
+                // Emit dust particles around the visual area
+                if (typeof Particles !== 'undefined') {
+                    const rect = visualArea.getBoundingClientRect();
+                    Particles.emitDust(rect.left + rect.width / 2, rect.top + rect.height / 2);
                 }
             }, 250);
         }

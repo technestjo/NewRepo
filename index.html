@@ -26,6 +26,10 @@
       <a href="admin-login.html" class="nav-admin">⚙ Admin</a>
     </div>
     <div style="display:flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px">
+      <button id="audio-toggle-btn" class="audio-toggle-btn"
+        style="padding:4px 10px;border-radius:999px;border:none;background:var(--surface);color:var(--text-muted);font-size:.70rem;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:4px">
+        🔇 <span data-en="Unmute" data-ar="تشغيل الصوت">Unmute</span>
+      </button>
       <button data-lang-toggle="en" class="lang-btn active"
         style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s">EN</button>
       <button data-lang-toggle="ar" class="lang-btn"
@@ -206,6 +210,215 @@
     </div>
   </section>
 
+  <!-- ═══════ NAME TRANSLATOR ═══════ -->
+  <section class="section-sm"
+    style="background:#0a0c10;border-top:1px solid rgba(212,175,55,0.1);border-bottom:1px solid rgba(212,175,55,0.1);position:relative;overflow:hidden">
+    <!-- Starburst decorative bg -->
+    <div
+      style="position:absolute;top:50%;left:50%;width:800px;height:800px;background:radial-gradient(circle,rgba(212,175,55,0.05) 0%,transparent 70%);transform:translate(-50%,-50%);pointer-events:none">
+    </div>
+    <div class="container reveal" style="position:relative;z-index:1;text-align:center;max-width:600px">
+      <div class="badge" style="margin:0 auto 16px"><span data-en="✨ Interactive Tool" data-ar="✨ أداة تفاعلية">✨
+          Interactive Tool</span></div>
+      <h2 style="font-family:'Cinzel',serif;font-size:2rem;color:var(--papyrus);margin-bottom:12px"
+        data-en="Write Your Name in Ancient Stones" data-ar="اكتب اسمك على الحجر القديم">Write Your Name in Ancient
+        Stones</h2>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:24px;line-height:1.6"
+        data-en="Type your name in English or Arabic, and watch it transform into 3,000-year-old Phoenician characters in real-time."
+        data-ar="اكتب اسمك باللغة العربية أو الإنجليزية، وشاهده يتحول إلى حروف فينيقية عمرها 3000 عام في الوقت الفعلي.">
+        Type your name in English or Arabic, and watch it transform into 3,000-year-old Phoenician characters in
+        real-time.</p>
+
+      <div
+        style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:left;box-shadow:0 8px 32px rgba(0,0,0,0.5)">
+        <label for="name-translator-input"
+          style="display:block;font-size:.75rem;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px"
+          data-en="Type Here:" data-ar="اكتب هنا:">Type Here:</label>
+        <input type="text" id="name-translator-input" autocomplete="off" placeholder="E.g. Ali or علي"
+          style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:var(--papyrus);padding:14px 16px;border-radius:8px;font-size:1.1rem;font-family:'Inter',sans-serif;margin-bottom:20px;outline:none" />
+
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div>
+            <div
+              style="font-size:.70rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px"
+              data-en="Ancient Translation:" data-ar="الترجمة القديمة:">Ancient Translation:</div>
+            <div id="name-translator-output" class="animate-glow"
+              style="font-size:3rem;color:var(--gold);min-height:56px;line-height:1;margin-top:8px;opacity:0.3;word-break:break-all">
+              ...</div>
+          </div>
+          <button id="translator-copy-btn" class="btn btn-outline"
+            style="padding:8px 14px;font-size:0.8rem;white-space:nowrap" data-en="⎘ Copy" data-ar="⎘ نسخ">⎘
+            Copy</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ INTERACTIVE ORIGINS MAP ═══════ -->
+  <section class="section" style="background:#05070a;border-bottom:1px solid rgba(212,175,55,0.1);padding-top:60px">
+    <div class="container reveal">
+      <div class="section-header">
+        <div class="section-tag" data-en="Geographic Origins" data-ar="الأصول الجغرافية">Geographic Origins</div>
+        <h2 class="section-title" data-en="Cradle of the Alphabet" data-ar="مهد الأبجدية">Cradle of the Alphabet</h2>
+        <div class="divider"></div>
+        <p class="section-desc" data-en="Hover over the ancient cities to see where writing changed forever."
+          data-ar="مرر الماوس فوق المدن القديمة لترى أين تغيرت الكتابة إلى الأبد.">Hover over the ancient cities to see
+          where writing changed forever.</p>
+      </div>
+
+      <div
+        style="position:relative;width:100%;max-width:800px;margin:0 auto;aspect-ratio:16/9;background:radial-gradient(ellipse at center, rgba(212,175,55,0.06) 0%, transparent 70%);border:1px solid rgba(212,175,55,0.15);border-radius:16px;overflow:hidden">
+        <!-- SVG Map Background -->
+        <svg viewBox="0 0 800 450" style="width:100%;height:100%;position:absolute;top:0;left:0">
+          <!-- Mediterranean Sea -->
+          <rect width="800" height="450" fill="#030406" />
+          <!-- Levant Coastline abstract shape -->
+          <path d="M400,0 C420,50 390,120 450,180 C500,230 460,300 480,350 C500,400 490,450 490,450 L800,450 L800,0 Z"
+            fill="#0a0c12" stroke="rgba(212,175,55,0.3)" stroke-width="2" />
+          <!-- Grid lines for ancient feel -->
+          <line x1="100" y1="0" x2="100" y2="450" stroke="rgba(255,255,255,0.02)" />
+          <line x1="300" y1="0" x2="300" y2="450" stroke="rgba(255,255,255,0.02)" />
+          <line x1="500" y1="0" x2="500" y2="450" stroke="rgba(255,255,255,0.02)" />
+          <line x1="700" y1="0" x2="700" y2="450" stroke="rgba(255,255,255,0.02)" />
+          <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(255,255,255,0.02)" />
+          <line x1="0" y1="250" x2="800" y2="250" stroke="rgba(255,255,255,0.02)" />
+          <line x1="0" y1="400" x2="800" y2="400" stroke="rgba(255,255,255,0.02)" />
+        </svg>
+
+        <!-- Tooltip Container -->
+        <style>
+          .map-hotspot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gold);
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--gold);
+            transition: all 0.3s
+          }
+
+          .map-hotspot::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            opacity: 0
+          }
+
+          .map-hotspot:hover {
+            transform: translate(-50%, -50%) scale(1.3);
+            background: #fff
+          }
+
+          .map-hotspot:hover .map-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 20px) scale(1);
+            pointer-events: auto
+          }
+
+          .map-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 10px) scale(0.95);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+            width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            text-align: left
+          }
+
+          .map-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 10px;
+            height: 10px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-left: 1px solid var(--border)
+          }
+        </style>
+
+        <!-- Ugarit (North) -->
+        <div class="map-hotspot" style="top:20%; left:55%">
+          <div class="map-tooltip">
+            <h4 style="color:var(--gold);margin:0 0 6px" data-en="Ugarit (Syria)" data-ar="أوغاريت (سوريا)">Ugarit
+              (Syria)</h4>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px" data-en="~ 1300 BCE"
+              data-ar="~ 1300 قبل الميلاد">~ 1300 BCE</div>
+            <p style="font-size:0.85rem;margin:0;line-height:1.5"
+              data-en="Home to the Ugaritic cuneiform alphabet, one of the earliest known true alphabets written on clay tablets."
+              data-ar="موطن الأبجدية المسمارية الأوغاريتية، واحدة من أقدم الأبجديات الحقيقية المكتوبة على الألواح الطينية.">
+              Home to the Ugaritic cuneiform alphabet, one of the earliest known true alphabets written on clay tablets.
+            </p>
+          </div>
+        </div>
+
+        <!-- Byblos / Tyre (Middle) -->
+        <div class="map-hotspot" style="top:45%; left:49%">
+          <div class="map-tooltip">
+            <h4 style="color:var(--gold);margin:0 0 6px" data-en="Byblos & Tyre (Lebanon)" data-ar="جبيل وصور (لبنان)">
+              Byblos & Tyre (Lebanon)</h4>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px" data-en="~ 1050 BCE"
+              data-ar="~ 1050 قبل الميلاد">~ 1050 BCE</div>
+            <p style="font-size:0.85rem;margin:0;line-height:1.5"
+              data-en="The Phoenician coastal heartland. Here, the 22-letter linear alphabet was perfected and spread across the Mediterranean by merchants."
+              data-ar="قلب الساحل الفينيقي. هنا تم ابتكار الأبجدية الخطية المكونة من 22 حرفاً ونشرها التجار عبر البحر المتوسط.">
+              The Phoenician coastal heartland. Here, the 22-letter linear alphabet was perfected and spread across the
+              Mediterranean by merchants.</p>
+          </div>
+        </div>
+
+        <!-- Sinai (South) -->
+        <div class="map-hotspot" style="top:80%; left:35%">
+          <div class="map-tooltip">
+            <h4 style="color:var(--gold);margin:0 0 6px" data-en="Serabit el-Khadim (Sinai)"
+              data-ar="سرابيط الخادم (سيناء)">Serabit el-Khadim (Sinai)</h4>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px" data-en="~ 1800 BCE"
+              data-ar="~ 1800 قبل الميلاد">~ 1800 BCE</div>
+            <p style="font-size:0.85rem;margin:0;line-height:1.5"
+              data-en="Canaanite miners carved the first 'Proto-Sinaitic' inscriptions, adapting Egyptian pictographs into phonetic letters."
+              data-ar="نحت عمال المناجم الكنعانيون أقدم النقوش 'السينائية الأولية'، حيث قاموا بتكييف الصور الهيروغليفية لتصبح حروفاً صوتية.">
+              Canaanite miners carved the first 'Proto-Sinaitic' inscriptions, adapting Egyptian pictographs into
+              phonetic letters.</p>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div
+          style="position:absolute;bottom:20px;right:20px;background:rgba(0,0,0,0.6);padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-size:0.8rem;color:var(--text-muted)">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:12px;height:12px;background:#030406;border:1px solid rgba(255,255,255,0.2)"></div>
+            <span data-en="Mediterranean Sea" data-ar="البحر الأبيض المتوسط">Mediterranean Sea</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+            <div style="width:12px;height:12px;background:#0a0c12;border:1px solid rgba(255,255,255,0.2)"></div>
+            <span data-en="The Levant (Canaan)" data-ar="بلاد الشام (كنعان)">The Levant (Canaan)</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════ FEATURES ═══════ -->
   <section class="section" style="background:linear-gradient(180deg,transparent,rgba(212,175,55,0.03),transparent)">
     <div class="container">
@@ -304,6 +517,8 @@
   <!-- Scripts -->
   <script src="js/database.js"></script>
   <script src="js/particles.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/translator.js"></script>
   <script src="js/cursor.js"></script>
   <script src="js/lang.js"></script>
   <script src="js/app.js"></script>
