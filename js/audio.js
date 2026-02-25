@@ -129,6 +129,13 @@ const AudioFX = (function () {
         }
     }, { once: true });
 
+    // Initialize UI on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateUI);
+    } else {
+        updateUI();
+    }
+
     return {
         init,
         playStoneThud,

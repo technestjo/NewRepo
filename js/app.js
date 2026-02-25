@@ -477,10 +477,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <button id="modal-draw-clear" class="btn btn-outline" style="position:absolute;top:10px;left:130px;z-index:10;padding:6px 12px;font-size:0.8rem;display:none;background:rgba(0,0,0,0.5)">🗑️ Clear</button>
             <canvas id="modal-draw-canvas" width="400" height="400" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:8;pointer-events:none;opacity:0;transition:opacity 0.3s;background:rgba(10,12,18,0.7);border-radius:12px"></canvas>
             
-            ${stage.imageBase64 && !stage.svgContent
-                ? `<img src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">`
+            <div id="stage-content-wrapper" style="width:100%;height:100%">
+              ${stage.imageBase64 && !stage.svgContent
+                ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">`
                 : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>`}
-            <span class="stage-era-badge">${stage.period || ''}</span>
+              <span class="stage-era-badge">${stage.period || ''}</span>
+            </div>
           </div>
           <div class="stage-info">
             <div class="stage-num">Stage ${currentStage + 1} of ${stages.length}</div>
@@ -639,7 +641,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     drawCanvas.style.pointerEvents = 'auto';
                     drawClearBtn.style.display = 'block';
                     resizeCanvas();
-                    if (document.getElementById('modal-stage-svg')) document.getElementById('modal-stage-svg').style.opacity = '0.3'; // dim background
+                    const stageImg = document.getElementById('modal-stage-img');
+                    const stageSvg = document.getElementById('modal-stage-svg');
+                    if (stageImg) stageImg.style.opacity = '0.3'; // dim background
+                    if (stageSvg) stageSvg.style.opacity = '0.3';
                 } else {
                     drawBtn.innerHTML = '🖌️ Try Drawing';
                     drawBtn.style.background = 'rgba(0,0,0,0.5)';
@@ -647,7 +652,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     drawCanvas.style.opacity = '0';
                     drawCanvas.style.pointerEvents = 'none';
                     drawClearBtn.style.display = 'none';
-                    if (document.getElementById('modal-stage-svg')) document.getElementById('modal-stage-svg').style.opacity = '1';
+                    const stageImg = document.getElementById('modal-stage-img');
+                    const stageSvg = document.getElementById('modal-stage-svg');
+                    if (stageImg) stageImg.style.opacity = '1';
+                    if (stageSvg) stageSvg.style.opacity = '1';
                 }
             });
 
@@ -704,17 +712,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStageDisplay(stages) {
         const stage = stages[currentStage];
         const visualArea = document.getElementById('modal-stage-visual');
-        if (visualArea) {
-            visualArea.style.opacity = '0';
-            visualArea.style.transform = 'scale(0.96)';
+        const contentWrapper = document.getElementById('stage-content-wrapper');
+        if (visualArea && contentWrapper) {
+            contentWrapper.style.opacity = '0';
+            contentWrapper.style.transform = 'scale(0.96)';
             setTimeout(() => {
-                visualArea.innerHTML = (stage.imageBase64 && !stage.svgContent)
-                    ? `<img src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">
+                contentWrapper.innerHTML = (stage.imageBase64 && !stage.svgContent)
+                    ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">
                        <span class="stage-era-badge">${stage.period || ''}</span>`
                     : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>
                        <span class="stage-era-badge">${stage.period || ''}</span>`;
-                visualArea.style.opacity = '1';
-                visualArea.style.transform = 'scale(1)';
+                contentWrapper.style.opacity = '1';
+                contentWrapper.style.transform = 'scale(1)';
 
                 // Re-trigger SVG animation if present
                 const svg = document.getElementById('modal-stage-svg');
