@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Shrine — Ancient Scripts</title>
+    <meta name="description"
+        content="Translate any language to Arabic and transcribe it into the ancient Nabataean script using our AI Shrine." />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+    <link rel="stylesheet" href="css/assistant.css" />
+</head>
+
+<body>
+
+    <!-- ═══════ NAVBAR ═══════ -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">
+            <span class="logo-symbol">𐤀</span>
+            Ancient Scripts
+        </a>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="letters.html" data-en="Letters" data-ar="الحروف">Letters</a>
+            <a href="assistant.html" class="active" data-en="AI Shrine" data-ar="المعبد الذكي">AI Shrine</a>
+            <a href="admin-login.html" class="nav-admin">⚙ Admin</a>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px">
+            <button id="audio-toggle-btn" class="audio-toggle-btn"
+                style="padding:4px 10px;border-radius:999px;border:none;background:var(--surface);color:var(--text-muted);font-size:.70rem;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:4px">
+                🔇 <span data-en="Unmute" data-ar="تشغيل الصوت">Unmute</span>
+            </button>
+            <button data-lang-toggle="en" class="lang-btn active"
+                style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s">EN</button>
+            <button data-lang-toggle="ar" class="lang-btn"
+                style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:Amiri,serif">عر</button>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ═══════ AI SHRINE SECTION ═══════ -->
+    <section class="assistant-hero">
+        <div class="shrine-particles" id="shrine-particles"></div>
+        <div class="container relative z-10">
+
+            <div class="shrine-header text-center mb-12 animate-fade-down">
+                <div class="text-gold uppercase tracking-widest text-sm mb-2 font-bold" data-en="The Oracle of Petra"
+                    data-ar="عرّافة البتراء">The Oracle of Petra</div>
+                <h1 class="font-serif text-4xl md:text-5xl text-papyrus mb-4" data-en="AI Nabataean Translator"
+                    data-ar="المترجم النبطي الذكي">AI Nabataean Translator</h1>
+                <p class="text-muted max-w-2xl mx-auto"
+                    data-en="Speak your truth in any language. The Oracle will translate it to Arabic, then chisel it into the eternal stone of the Nabataeans."
+                    data-ar="تحدث بحقيقتك بأي لغة. ستقوم العرافة بترجمتها إلى العربية، ثم نقشها على الحجر الأبدي للأنباط.">
+                    Speak your truth in any language. The Oracle will translate it to Arabic, then chisel it into the
+                    eternal stone of the Nabataeans.</p>
+            </div>
+
+            <div class="shrine-interface animate-fade-up delay-2">
+                <!-- Input Area -->
+                <div
+                    class="shrine-input-area scroll-bg p-8 rounded-xl border border-gold-dim shadow-golden relative overflow-hidden">
+                    <div class="glow-orb absolute -top-10 -left-10 w-32 h-32 bg-gold opacity-10 rounded-full blur-2xl">
+                    </div>
+
+                    <label for="ai-input" class="block text-gold-dim text-xs uppercase tracking-widest mb-3 font-bold"
+                        data-en="Your Message (Any Language)" data-ar="رسالتك (بأي لغة)">Your Message (Any
+                        Language)</label>
+                    <textarea id="ai-input" rows="3" placeholder="Type a sentence here..."
+                        class="w-full bg-dark bg-opacity-50 border border-border rounded-lg text-papyrus p-4 font-sans text-lg focus:outline-none focus:border-gold transition-colors resize-none"
+                        data-placeholder-ar="اكتب جملة هنا..."></textarea>
+
+                    <div class="mt-4 flex justify-end">
+                        <button id="translate-btn"
+                            class="shrine-btn group relative overflow-hidden px-8 py-3 rounded-lg bg-surface border border-gold text-gold font-bold uppercase tracking-wider text-sm transition-all hover:bg-gold hover:text-dark">
+                            <span class="relative z-10 flex items-center gap-2">
+                                <span class="icon">✨</span>
+                                <span data-en="Translate & Transcribe" data-ar="ترجم وانقش">Translate &
+                                    Transcribe</span>
+                            </span>
+                            <div
+                                class="absolute inset-0 h-full w-0 bg-gold transition-all duration-300 ease-out group-hover:w-full z-0">
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center my-6">
+                    <div class="inline-block p-3 rounded-full border border-border bg-surface text-gold animate-float">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14M19 12l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Output Area -->
+                <div id="shrine-output-area"
+                    class="shrine-output-area stone-bg p-8 md:p-12 rounded-xl border border-border shadow-deep relative text-center opacity-50 transition-opacity duration-500">
+
+                    <!-- Loading state -->
+                    <div id="shrine-loading"
+                        class="hidden absolute inset-0 bg-dark bg-opacity-80 backdrop-blur-sm rounded-xl flex-col items-center justify-center z-10">
+                        <div
+                            class="loader-circle w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mb-4">
+                        </div>
+                        <div class="text-gold font-serif text-sm tracking-widest animate-pulse"
+                            data-en="Consulting the Oracle..." data-ar="استشارة العرافة...">Consulting the Oracle...
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="text-xs text-muted uppercase tracking-widest mb-1" data-en="Arabic Translation"
+                            data-ar="الترجمة العربية">Arabic Translation</div>
+                        <div id="arabic-output" class="text-xl md:text-2xl text-papyrus font-amiri dir-rtl">...</div>
+                    </div>
+
+                    <div class="divider mx-auto w-1/3 my-6 border-t border-border"></div>
+
+                    <div>
+                        <div class="text-xs text-gold uppercase tracking-widest mb-3 font-bold"
+                            data-en="Nabataean Inscription" data-ar="النقش النبطي">Nabataean Inscription</div>
+                        <div id="nabataean-output"
+                            class="text-4xl md:text-6xl text-gold pb-4 min-h-[4rem] flex flex-wrap justify-center gap-x-2 gap-y-4 dir-rtl"
+                            style="text-shadow: 0 0 20px rgba(212,175,55,0.4);">
+                            ...
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="footer mt-auto">
+        <div class="footer-logo">Ancient Scripts — الكتابات القديمة</div>
+        <p data-en="An interactive educational project on ancient writing systems of the Levant."
+            data-ar="مشروع تعليمي تفاعلي عن أنظمة الكتابة القديمة في بلاد الشام.">An interactive educational project on
+            ancient writing systems of the Levant.</p>
+        <div class="footer-links">
+            <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="letters.html" data-en="Letters" data-ar="الحروف">Letters</a>
+            <a href="assistant.html" data-en="AI Shrine" data-ar="المعبد الذكي">AI Shrine</a>
+            <a href="admin-login.html" data-en="Admin" data-ar="لوحة التحكم">Admin</a>
+        </div>
+        <p style="margin-top:20px;opacity:.4;font-size:.72rem" data-en="© 2026 — Built for Education"
+            data-ar="© 2026 — صنع للتعليم">© 2026 — Built for Education</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/audio.js?v=3"></script>
+    <script src="js/cursor.js?v=2"></script>
+    <script src="js/lang.js"></script>
+    <script src="js/assistant.js"></script>
+</body>
+
+</html>
