@@ -1,11 +1,10 @@
-// js/assistant.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const inputArea = document.getElementById('ai-input');
     const translateBtn = document.getElementById('translate-btn');
     const outputArea = document.getElementById('shrine-output-area');
     const arabicOutput = document.getElementById('arabic-output');
     const nabataeanOutput = document.getElementById('nabataean-output');
+    const nabataeanRaw = document.getElementById('nabataean-raw');
     const loader = document.getElementById('shrine-loading');
 
     // Mymemory API limits to 500 chars/day for free without email, but works for our simple UI.
@@ -65,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             nabataeanOutput.appendChild(span);
         });
+
+        if (nabataeanRaw) {
+            nabataeanRaw.textContent = text;
+        }
 
         if (window.AudioFX) {
             AudioFX.playDustChime(); // Magical success sound
@@ -126,6 +129,34 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             handleTranslation();
         }
+    });
+
+    // Copy to clipboard logic
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl || targetEl.textContent === '...' || !targetEl.textContent) return;
+
+            navigator.clipboard.writeText(targetEl.textContent.trim()).then(() => {
+                const originalText = btn.innerHTML;
+                if (window.AudioFX) AudioFX.playDustChime(); // subtle success sound
+
+                // Show success
+                const currentLang = document.documentElement.lang || 'en';
+                btn.innerHTML = currentLang === 'ar' ? '✓ تم النسخ' : '✓ Copied';
+                btn.style.color = 'var(--gold)';
+                btn.style.borderColor = 'var(--gold)';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
     });
 
     // Mobile menu toggle logic

@@ -61,78 +61,94 @@
             <div class="shrine-interface animate-fade-up delay-2">
                 <!-- Input Area -->
                 <div class="scroll-bg shadow-golden"
-                    style="padding:40px;border-radius:24px;border:1px solid var(--border-glow);position:relative;overflow:hidden;margin-bottom:32px;">
+                    style="padding:40px;border-radius:24px;border:1px solid rgba(212,175,55,0.4);position:relative;overflow:hidden;margin-bottom:32px;background:rgba(20, 16, 12, 0.85);backdrop-filter:blur(10px);">
                     <div class="glow-orb"
                         style="position:absolute;top:-40px;left:-40px;width:150px;height:150px;background:var(--gold);opacity:0.1;border-radius:50%;filter:blur(30px);">
                     </div>
 
                     <label for="ai-input"
-                        style="display:block;color:var(--gold-dim);font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;font-weight:700;"
+                        style="display:block;color:var(--gold);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;font-weight:700;"
                         data-en="Your Message (Any Language)" data-ar="رسالتك (بأي لغة)">Your Message (Any
                         Language)</label>
                     <textarea id="ai-input" rows="3" placeholder="Type a sentence here..."
-                        style="width:100%;background:rgba(10,8,6,0.6);border:1px solid var(--border);border-radius:12px;color:var(--papyrus);padding:20px;font-family:'Inter',sans-serif;font-size:1.2rem;outline:none;transition:border-color 0.3s;resize:none;box-sizing:border-box;"
-                        onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"
+                        style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(212,175,55,0.2);border-radius:12px;color:var(--papyrus);padding:24px;font-family:'Inter',sans-serif;font-size:1.3rem;outline:none;transition:all 0.3s;resize:none;box-sizing:border-box;box-shadow:inset 0 2px 10px rgba(0,0,0,0.5);"
+                        onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='inset 0 2px 10px rgba(0,0,0,0.5), 0 0 15px rgba(212,175,55,0.2)'"
+                        onblur="this.style.borderColor='rgba(212,175,55,0.2)';this.style.boxShadow='inset 0 2px 10px rgba(0,0,0,0.5)'"
                         data-placeholder-ar="اكتب جملة هنا..."></textarea>
 
                     <div style="margin-top:24px;display:flex;justify-content:flex-end;">
                         <button id="translate-btn" class="shrine-btn btn-primary"
-                            style="padding:16px 32px;font-size:1rem;border-radius:12px;display:flex;align-items:center;gap:12px;cursor:pointer;background:linear-gradient(135deg,var(--gold),#B8940A);color:var(--dark-ink);border:none;font-weight:bold;text-transform:uppercase;letter-spacing:0.05em;transition:transform 0.2s,box-shadow 0.2s;"
-                            onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(212,175,55,0.4)'"
-                            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+                            style="padding:16px 36px;font-size:1.05rem;border-radius:12px;display:flex;align-items:center;gap:12px;cursor:pointer;background:linear-gradient(135deg,var(--gold),#B8940A);color:var(--dark-ink);border:none;font-weight:bold;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"
+                            onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(212,175,55,0.5)'"
+                            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(212,175,55,0.2)'">
                             <span class="icon" style="font-size:1.4rem;">✨</span>
                             <span data-en="Translate & Transcribe" data-ar="ترجم وانقش">Translate & Transcribe</span>
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div style="text-align:center;margin:32px 0;">
+            <div style="text-align:center;margin:32px 0;">
+                <div
+                    style="display:inline-flex;padding:12px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--gold);animation:float 4s ease-in-out infinite;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M19 12l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Output Area -->
+            <div id="shrine-output-area" class="shrine-output-area stone-bg shadow-deep"
+                style="padding:48px;border-radius:24px;border:1px solid rgba(212,175,55,0.2);position:relative;text-align:center;opacity:0.4;transition:opacity 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;background:rgba(15, 12, 10, 0.9);">
+
+                <!-- Loading state -->
+                <div id="shrine-loading"
+                    style="display:none;position:absolute;inset:0;background:rgba(10,8,6,0.9);backdrop-filter:blur(8px);border-radius:24px;flex-direction:column;align-items:center;justify-content:center;z-index:20;">
                     <div
-                        style="display:inline-flex;padding:12px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--gold);animation:float 4s ease-in-out infinite;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 5v14M19 12l-7 7-7-7" />
-                        </svg>
+                        style="width:50px;height:50px;border:4px solid transparent;border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;">
                     </div>
+                    <div style="color:var(--gold);font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.15em;animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"
+                        data-en="Consulting the Oracle..." data-ar="استشارة العرافة...">Consulting the Oracle...</div>
                 </div>
 
-                <!-- Output Area -->
-                <div id="shrine-output-area" class="shrine-output-area stone-bg shadow-deep"
-                    style="padding:48px;border-radius:24px;border:1px solid var(--border);position:relative;text-align:center;opacity:0.4;transition:opacity 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;">
-
-                    <!-- Loading state -->
-                    <div id="shrine-loading"
-                        style="display:none;position:absolute;inset:0;background:rgba(10,8,6,0.9);backdrop-filter:blur(8px);border-radius:24px;flex-direction:column;align-items:center;justify-content:center;z-index:20;">
-                        <div
-                            style="width:50px;height:50px;border:4px solid transparent;border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;">
-                        </div>
-                        <div style="color:var(--gold);font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.15em;animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"
-                            data-en="Consulting the Oracle..." data-ar="استشارة العرافة...">Consulting the Oracle...
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom:32px;">
-                        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:12px;"
+                <div style="margin-bottom:32px;position:relative;">
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;max-width:600px;margin-left:auto;margin-right:auto;">
+                        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.15em;"
                             data-en="Arabic Translation" data-ar="الترجمة العربية">Arabic Translation</div>
-                        <div id="arabic-output"
-                            style="font-size:1.8rem;color:var(--papyrus);font-family:'Amiri',serif;direction:rtl;line-height:1.6;">
-                            ...</div>
+                        <button class="btn btn-outline copy-btn" data-target="arabic-output"
+                            style="padding:6px 12px;font-size:0.7rem;border-radius:8px;" data-en="⎘ Copy"
+                            data-ar="⎘ نسخ">⎘ Copy</button>
                     </div>
+                    <div id="arabic-output"
+                        style="font-size:2rem;color:var(--papyrus);font-family:'Amiri',serif;direction:rtl;line-height:1.6;font-weight:bold;">
+                        ...</div>
+                </div>
 
-                    <div style="width:30%;height:1px;background:var(--border-glow);margin:32px auto;opacity:0.5;"></div>
+                <div
+                    style="width:150px;height:2px;background:linear-gradient(90deg, transparent, var(--gold), transparent);margin:32px auto;opacity:0.7;">
+                </div>
 
-                    <div>
-                        <div style="font-size:0.85rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:24px;font-weight:bold;"
+                <div style="position:relative;">
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;max-width:600px;margin-left:auto;margin-right:auto;">
+                        <div style="font-size:0.85rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.15em;font-weight:bold;"
                             data-en="Nabataean Inscription" data-ar="النقش النبطي">Nabataean Inscription</div>
-                        <div id="nabataean-output"
-                            style="font-size:clamp(3rem, 8vw, 5rem);color:var(--gold);padding-bottom:20px;min-height:80px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;direction:rtl;text-shadow:0 0 24px rgba(212,175,55,0.5);">
-                            ...
-                        </div>
+                        <button class="btn btn-outline copy-btn" data-target="nabataean-raw"
+                            style="padding:6px 12px;font-size:0.7rem;border-radius:8px;" data-en="⎘ Copy"
+                            data-ar="⎘ نسخ">⎘ Copy</button>
                     </div>
-
+                    <div id="nabataean-output"
+                        style="font-size:clamp(3.5rem, 8vw, 6rem);color:var(--gold);padding-bottom:20px;min-height:80px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;direction:rtl;text-shadow:0 0 30px rgba(212,175,55,0.7);">
+                        ...
+                    </div>
+                    <div id="nabataean-raw" style="display:none;"></div>
                 </div>
 
             </div>
+
+        </div>
         </div>
     </section>
 
