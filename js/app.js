@@ -478,7 +478,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="stage-content-wrapper" style="width:100%;height:100%">
               ${stage.imageBase64 && !stage.svgContent
                 ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">`
-                : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>`}
+                : (stage.textSymbol && !stage.svgContent)
+                    ? `<div id="modal-stage-text" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:7rem;color:var(--gold);line-height:1;user-select:none;">${stage.textSymbol}</div>`
+                    : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>`}
               <span class="stage-era-badge">${stage.period || ''}</span>
             </div>
           </div>
@@ -787,7 +789,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 contentWrapper.innerHTML = (stage.imageBase64 && !stage.svgContent)
                     ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">
                        <span class="stage-era-badge">${stage.period || ''}</span>`
-                    : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>
+                    : (stage.textSymbol && !stage.svgContent)
+                        ? `<div id="modal-stage-text" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:7rem;color:var(--gold);line-height:1;user-select:none;">${stage.textSymbol}</div>
+                       <span class="stage-era-badge">${stage.period || ''}</span>`
+                        : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>
                        <span class="stage-era-badge">${stage.period || ''}</span>`;
                 contentWrapper.style.opacity = '1';
                 contentWrapper.style.transform = 'scale(1)';
@@ -809,7 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const display = document.getElementById('modal-stage-display');
         if (display) {
-            display.querySelector('.stage-num').textContent = `Stage ${currentStage + 1} of ${stages.length}`;
+            display.querySelector('.stage-num').textContent = `Stage ${currentStage + 1} of ${stages.length} `;
             display.querySelector('.stage-name-en').textContent = stage.nameEn || '';
             display.querySelector('.stage-name-ar').textContent = stage.nameAr || '';
             display.querySelector('.stage-period').textContent = stage.period || '';

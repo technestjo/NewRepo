@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let stagesList = []; // [{nameEn, nameAr, period, description, descriptionAr, imageBase64, svgContent}]
 
     function makeEmptyStage() {
-        return { nameEn: '', nameAr: '', period: '', description: '', descriptionAr: '', imageBase64: null, svgContent: '' };
+        return { nameEn: '', nameAr: '', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' };
     }
 
     function renderStagesEditor() {
@@ -124,8 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div><label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Stage Name (AR)</label>
                      <input class="form-input stage-field" data-idx="${i}" data-key="nameAr" value="${e(s.nameAr)}" placeholder="اسم المرحلة" dir="rtl"></div>
             </div>
-            <div style="margin-bottom:12px"><label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Period / Era</label>
-                 <input class="form-input stage-field" data-idx="${i}" data-key="period" value="${e(s.period)}" placeholder="e.g. ~1050 BCE" style="max-width:240px"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div><label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Period / Era</label>
+                     <input class="form-input stage-field" data-idx="${i}" data-key="period" value="${e(s.period)}" placeholder="e.g. ~1050 BCE"></div>
+                <div><label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Text Symbol (Large)</label>
+                     <input class="form-input stage-field" data-idx="${i}" data-key="textSymbol" value="${e(s.textSymbol)}" placeholder="e.g. 𐡀" style="font-size:1.4rem;text-align:center"></div>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
                 <div><label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Description (EN)</label>
                      <textarea class="form-textarea stage-field" data-idx="${i}" data-key="description" placeholder="Describe this evolution stage…" style="min-height:80px">${e(s.description)}</textarea></div>
@@ -243,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stagesList = (l.stages || []).map(s => ({
             nameEn: s.nameEn || '', nameAr: s.nameAr || '', period: s.period || '',
             description: s.description || '', descriptionAr: s.descriptionAr || '',
+            textSymbol: s.textSymbol || '',
             imageBase64: s.imageBase64 || null, svgContent: s.svgContent || ''
         }));
         document.getElementById('form-nameEn').value = l.nameEn || '';
@@ -269,7 +274,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.getElementById('add-new-btn')?.addEventListener('click', () => {
-        editingId = null; currentThumbnailBase64 = null; stagesList = [];
+        editingId = null; currentThumbnailBase64 = null;
+        stagesList = [
+            { nameEn: 'Egyptian Hieroglyphic', nameAr: 'الهيروغليفية المصرية', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' },
+            { nameEn: 'Proto-Sinaitic', nameAr: 'السينائية الأولية', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' },
+            { nameEn: 'Phoenician', nameAr: 'الفينيقية', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' },
+            { nameEn: 'Aramaic', nameAr: 'الآرامية', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' },
+            { nameEn: 'Nabataean', nameAr: 'النبطية', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' },
+            { nameEn: 'Arabic', nameAr: 'العربية', period: '', description: '', descriptionAr: '', textSymbol: '', imageBase64: null, svgContent: '' }
+        ];
         document.getElementById('letter-form')?.reset();
         document.getElementById('form-title').textContent = 'Add New Letter';
         updateSymbolPreview(); clearImagePreview(); renderStagesEditor();
@@ -283,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const finalStages = stagesList.map(s => ({
             nameEn: s.nameEn, nameAr: s.nameAr, period: s.period,
             description: s.description, descriptionAr: s.descriptionAr,
+            textSymbol: s.textSymbol,
             svgContent: s.svgContent || '',
             imageBase64: s.imageBase64 || null
         }));
