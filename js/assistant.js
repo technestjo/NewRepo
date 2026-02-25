@@ -77,8 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // UI State: Loading
         translateBtn.disabled = true;
-        loader.classList.remove('hidden');
-        loader.classList.add('flex');
+        loader.style.display = 'flex';
         outputArea.classList.add('active');
 
         if (window.AudioFX) {
@@ -101,8 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // UI State: Success
-            loader.classList.add('hidden');
-            loader.classList.remove('flex');
+            loader.style.display = 'none';
 
             // Render Arabic
             arabicOutput.textContent = arabicText;
@@ -113,8 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (err) {
             console.error('Translation failed:', err);
-            loader.classList.add('hidden');
-            loader.classList.remove('flex');
+            loader.style.display = 'none';
             arabicOutput.textContent = 'Translation Error. Try again.';
             nabataeanOutput.textContent = '...';
         } finally {
