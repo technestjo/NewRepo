@@ -10,38 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mymemory API limits to 500 chars/day for free without email, but works for our simple UI.
     const TRANSLATE_API = 'https://api.mymemory.translated.net/get';
 
-    // Nabataean Unicode mapping based on the Arabic alphabet
-    const nabataeanMap = {
-        'ا': '𐢀', 'أ': '𐢀', 'إ': '𐢀', 'آ': '𐢀', 'ى': '𐢀',
-        'ب': '𐢁',
-        'ج': '𐢂',
-        'د': '𐢃', 'ذ': '𐢃', // Nabataean didn't distinguish dotting initially
-        'ه': '𐢄', 'ة': '𐢄',
-        'و': '𐢅', 'ؤ': '𐢅',
-        'ز': '𐢆',
-        'ح': '𐢇', 'خ': '𐢇',
-        'ط': '𐢈', 'ظ': '𐢈',
-        'ي': '𐢉', 'ئ': '𐢉',
-        'ك': '𐢊',
-        'ل': '𐢋',
-        'م': '𐢌',
-        'ن': '𐢍',
-        'س': '𐢎',
-        'ع': '𐢏', 'غ': '𐢏',
-        'ف': '𐢐',
-        'ص': '𐢑', 'ض': '𐢑',
-        'ق': '𐢒',
-        'ر': '𐢓',
-        'ش': '𐢔',
-        'ت': '𐢕', 'ث': '𐢕',
-        ' ': ' ' // Space
+    const scriptMaps = {
+        'nabataean': {
+            'ا': '𐢀', 'أ': '𐢀', 'إ': '𐢀', 'آ': '𐢀', 'ى': '𐢀', 'ب': '𐢁', 'ج': '𐢂', 'د': '𐢃', 'ذ': '𐢃',
+            'ه': '𐢄', 'ة': '𐢄', 'و': '𐢅', 'ؤ': '𐢅', 'ز': '𐢆', 'ح': '𐢇', 'خ': '𐢇', 'ط': '𐢈', 'ظ': '𐢈',
+            'ي': '𐢉', 'ئ': '𐢉', 'ك': '𐢊', 'ل': '𐢋', 'م': '𐢌', 'ن': '𐢍', 'س': '𐢎', 'ع': '𐢏', 'غ': '𐢏',
+            'ف': '𐢐', 'ص': '𐢑', 'ض': '𐢑', 'ق': '𐢒', 'ر': '𐢓', 'ش': '𐢔', 'ت': '𐢕', 'ث': '𐢕', ' ': ' '
+        },
+        'phoenician': {
+            'ا': '𐤀', 'أ': '𐤀', 'إ': '𐤀', 'آ': '𐤀', 'ى': '𐤀', 'ب': '𐤁', 'ج': '𐤂', 'د': '𐤃', 'ذ': '𐤃',
+            'ه': '𐤄', 'ة': '𐤄', 'و': '𐤅', 'ؤ': '𐤅', 'ز': '𐤆', 'ح': '𐤇', 'خ': '𐤇', 'ط': '𐤈', 'ظ': '𐤈',
+            'ي': '𐤉', 'ئ': '𐤉', 'ك': '𐤊', 'ل': '𐤋', 'م': '𐤌', 'ن': '𐤍', 'س': '𐤎', 'ع': '𐤏', 'غ': '𐤏',
+            'ف': '𐤐', 'ص': '𐤑', 'ض': '𐤑', 'ق': '𐤒', 'ر': '𐤓', 'ش': '𐤔', 'ت': '𐤕', 'ث': '𐤕', ' ': ' '
+        },
+        'aramaic': {
+            'ا': '𐡀', 'أ': '𐡀', 'إ': '𐡀', 'آ': '𐡀', 'ى': '𐡀', 'ب': '𐡁', 'ج': '𐡂', 'د': '𐡃', 'ذ': '𐡃',
+            'ه': '𐡄', 'ة': '𐡄', 'و': '𐡅', 'ؤ': '𐡅', 'ز': '𐡆', 'ح': '𐡇', 'خ': '𐡇', 'ط': '𐡈', 'ظ': '𐡈',
+            'ي': '𐡉', 'ئ': '𐡉', 'ك': '𐡊', 'ل': '𐡋', 'م': '𐡌', 'ن': '𐡍', 'س': '𐡎', 'ع': '𐡏', 'غ': '𐡏',
+            'ف': '𐡐', 'ص': '𐡑', 'ض': '𐡑', 'ق': '𐡒', 'ر': '𐡓', 'ش': '𐡔', 'ت': '𐡕', 'ث': '𐡕', ' ': ' '
+        }
     };
 
-    function transliterateToNabataean(arabicText) {
+    function transliterateToAncientScript(arabicText, script) {
         let result = '';
+        const map = scriptMaps[script] || scriptMaps['nabataean'];
         for (let char of arabicText) {
-            // Keep original character if not in map (e.g. punctuation, numbers)
-            result += nabataeanMap[char] || char;
+            result += map[char] || char;
         }
         return result;
     }
@@ -108,8 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Render Arabic
             arabicOutput.textContent = arabicText;
 
-            // Transliterate and animate Nabataean
-            const nabataeanText = transliterateToNabataean(arabicText);
+            // Update label based on script
+            const scriptSelector = document.getElementById('script-selector');
+            const targetScriptLabel = document.getElementById('target-script-label');
+            const targetScript = scriptSelector ? scriptSelector.value : 'nabataean';
+
+            if (targetScriptLabel && scriptSelector) {
+                const selectedOption = scriptSelector.options[scriptSelector.selectedIndex];
+                targetScriptLabel.textContent = selectedOption.textContent + ' Inscription';
+            }
+
+            // Transliterate and animate
+            const nabataeanText = transliterateToAncientScript(arabicText, targetScript);
             renderNabataean(nabataeanText);
 
         } catch (err) {
@@ -138,24 +142,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetEl = document.getElementById(targetId);
             if (!targetEl || targetEl.textContent === '...' || !targetEl.textContent) return;
 
-            navigator.clipboard.writeText(targetEl.textContent.trim()).then(() => {
+            const textToCopy = targetEl.textContent.trim();
+            const showSuccessFn = () => {
                 const originalText = btn.innerHTML;
                 if (window.AudioFX) AudioFX.playDustChime(); // subtle success sound
-
-                // Show success
                 const currentLang = document.documentElement.lang || 'en';
                 btn.innerHTML = currentLang === 'ar' ? '✓ تم النسخ' : '✓ Copied';
                 btn.style.color = 'var(--gold)';
                 btn.style.borderColor = 'var(--gold)';
-
                 setTimeout(() => {
                     btn.innerHTML = originalText;
                     btn.style.color = '';
                     btn.style.borderColor = '';
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(showSuccessFn).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            } else {
+                // Fallback for file:// protocol or older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showSuccessFn();
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                }
+                document.body.removeChild(textArea);
+            }
         });
     });
 

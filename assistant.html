@@ -76,7 +76,19 @@
                         onblur="this.style.borderColor='rgba(212,175,55,0.2)';this.style.boxShadow='inset 0 2px 10px rgba(0,0,0,0.5)'"
                         data-placeholder-ar="اكتب جملة هنا..."></textarea>
 
-                    <div style="margin-top:24px;display:flex;justify-content:flex-end;">
+                    <div
+                        style="margin-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <label for="script-selector"
+                                style="color:var(--gold-dim);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:bold;"
+                                data-en="Target Script" data-ar="الخط الهدف">Target Script</label>
+                            <select id="script-selector"
+                                style="background:rgba(0,0,0,0.6);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:10px 16px;border-radius:8px;font-family:'Cinzel',serif;font-size:1rem;outline:none;cursor:pointer;">
+                                <option value="nabataean" data-en="Nabataean" data-ar="النبطي">Nabataean</option>
+                                <option value="phoenician" data-en="Phoenician" data-ar="الفينيقي">Phoenician</option>
+                                <option value="aramaic" data-en="Aramaic" data-ar="الآرامي">Aramaic</option>
+                            </select>
+                        </div>
                         <button id="translate-btn" class="shrine-btn btn-primary"
                             style="padding:16px 36px;font-size:1.05rem;border-radius:12px;display:flex;align-items:center;gap:12px;cursor:pointer;background:linear-gradient(135deg,var(--gold),#B8940A);color:var(--dark-ink);border:none;font-weight:bold;text-transform:uppercase;letter-spacing:0.1em;transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);"
                             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(212,175,55,0.5)'"
@@ -100,7 +112,7 @@
 
             <!-- Output Area -->
             <div id="shrine-output-area" class="shrine-output-area stone-bg shadow-deep"
-                style="padding:48px;border-radius:24px;border:1px solid rgba(212,175,55,0.2);position:relative;text-align:center;opacity:0.4;transition:opacity 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;background:rgba(15, 12, 10, 0.9);">
+                style="padding:48px;border-radius:24px;border:1px solid rgba(212,175,55,0.2);position:relative;text-align:center;opacity:1;transition:opacity 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;background:rgba(15, 12, 10, 0.9);">
 
                 <!-- Loading state -->
                 <div id="shrine-loading"
@@ -122,7 +134,7 @@
                             data-ar="⎘ نسخ">⎘ Copy</button>
                     </div>
                     <div id="arabic-output"
-                        style="font-size:2rem;color:var(--papyrus);font-family:'Amiri',serif;direction:rtl;line-height:1.6;font-weight:bold;">
+                        style="font-size:2rem;color:#FFF8E7;font-family:'Amiri',serif;direction:rtl;line-height:1.6;font-weight:bold;text-shadow:0 0 10px rgba(255,248,231,0.3);">
                         ...</div>
                 </div>
 
@@ -133,14 +145,15 @@
                 <div style="position:relative;">
                     <div
                         style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;max-width:600px;margin-left:auto;margin-right:auto;">
-                        <div style="font-size:0.85rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.15em;font-weight:bold;"
-                            data-en="Nabataean Inscription" data-ar="النقش النبطي">Nabataean Inscription</div>
+                        <div id="target-script-label"
+                            style="font-size:0.85rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.15em;font-weight:bold;"
+                            data-en="Ancient Inscription" data-ar="النقش القديم">Ancient Inscription</div>
                         <button class="btn btn-outline copy-btn" data-target="nabataean-raw"
                             style="padding:6px 12px;font-size:0.7rem;border-radius:8px;" data-en="⎘ Copy"
                             data-ar="⎘ نسخ">⎘ Copy</button>
                     </div>
                     <div id="nabataean-output"
-                        style="font-size:clamp(3.5rem, 8vw, 6rem);color:var(--gold);padding-bottom:20px;min-height:80px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;direction:rtl;text-shadow:0 0 30px rgba(212,175,55,0.7);">
+                        style="font-size:clamp(3.5rem, 8vw, 6rem);color:#FFE066;padding-bottom:20px;min-height:80px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;direction:rtl;text-shadow:0 0 40px rgba(255,224,102,0.8);">
                         ...
                     </div>
                     <div id="nabataean-raw" style="display:none;"></div>
