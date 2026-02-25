@@ -29,55 +29,58 @@ const AudioFX = (function () {
         return buffer;
     }
 
-    // A deep, resonant thud (like dropping a small stone)
+    // A soft, deep string pluck (like an ancient Oud)
     function playStoneThud() {
         if (!ctx || isMuted) return;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
-        osc.connect(gain);
-        gain.connect(masterGain);
-
-        osc.type = 'sine';
-        // Pitch drop
-        osc.frequency.setValueAtTime(150, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+        // Use triangle for a softer, string-like tone
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, ctx.currentTime);
+        // Slight pitch decay mimicking a plucked string
+        osc.frequency.exponentialRampToValueAtTime(130, ctx.currentTime + 0.6);
 
         // Volume envelope
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
 
+        osc.connect(gain);
+        gain.connect(masterGain);
         osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.3);
+        osc.stop(ctx.currentTime + 0.9);
     }
 
-    // A gritty scraping sound (like sliding a stone block)
+    // A soft, breathy flute sound (like a Ney)
     function playStoneScrape() {
         if (!ctx || isMuted) return;
-        const noiseSource = ctx.createBufferSource();
-        noiseSource.buffer = createNoiseBuffer(0.4);
+        const noise = ctx.createBufferSource();
+        noise.buffer = createNoiseBuffer(0.6);
 
         const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        // Sweep filter for texture
-        filter.frequency.setValueAtTime(800, ctx.currentTime);
-        filter.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.3);
+        filter.type = 'bandpass';
+        filter.frequency.value = 400;
+        filter.Q.value = 5;
+
+        // Slight breath flutter
+        filter.frequency.linearRampToValueAtTime(450, ctx.currentTime + 0.2);
+        filter.frequency.linearRampToValueAtTime(380, ctx.currentTime + 0.5);
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
 
-        noiseSource.connect(filter);
+        noise.connect(filter);
         filter.connect(gain);
         gain.connect(masterGain);
 
-        noiseSource.start(ctx.currentTime);
-        noiseSource.stop(ctx.currentTime + 0.4);
+        noise.start(ctx.currentTime);
+        noise.stop(ctx.currentTime + 0.6);
     }
 
-    // A soft magical "dust" chime
+    // A gentle, resonant ancient bell (subtle chime)
     function playDustChime() {
         if (!ctx || isMuted) return;
         const osc = ctx.createOscillator();
@@ -86,15 +89,16 @@ const AudioFX = (function () {
         osc.connect(gain);
         gain.connect(masterGain);
 
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(800 + Math.random() * 400, ctx.currentTime);
+        osc.type = 'sine';
+        // Gentle bell frequency with slight variation
+        osc.frequency.setValueAtTime(600 + Math.random() * 100, ctx.currentTime);
 
         gain.gain.setValueAtTime(0, ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
 
         osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.5);
+        osc.stop(ctx.currentTime + 1.5);
     }
 
     function toggleMute() {
