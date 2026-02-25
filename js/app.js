@@ -473,8 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="journey-stage-display" id="modal-stage-display">
           <div class="stage-svg-area" id="modal-stage-visual" style="position:relative">
-            <button id="modal-draw-btn" class="btn btn-outline" style="position:absolute;top:10px;left:10px;z-index:10;padding:6px 12px;font-size:0.8rem;background:rgba(0,0,0,0.5)">🖌️ Try Drawing</button>
-            <button id="modal-draw-clear" class="btn btn-outline" style="position:absolute;top:10px;left:130px;z-index:10;padding:6px 12px;font-size:0.8rem;display:none;background:rgba(0,0,0,0.5)">🗑️ Clear</button>
             <canvas id="modal-draw-canvas" width="400" height="400" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:8;pointer-events:none;opacity:0;transition:opacity 0.3s;background:rgba(10,12,18,0.7);border-radius:12px"></canvas>
             
             <div id="stage-content-wrapper" style="width:100%;height:100%">
@@ -484,14 +482,22 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="stage-era-badge">${stage.period || ''}</span>
             </div>
           </div>
-          <div class="stage-info">
+          <div class="stage-info" style="display:flex;flex-direction:column">
             <div class="stage-num">Stage ${currentStage + 1} of ${stages.length}</div>
             <div class="stage-name-en">${stage.nameEn || ''}</div>
             <div class="stage-name-ar">${stage.nameAr || ''}</div>
             <div class="stage-period">${stage.period || ''}</div>
+            
+            <!-- Drawing Controls moved here -->
+            <div style="margin:16px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+               <button id="modal-draw-btn" class="btn btn-outline btn-sm" style="padding:6px 14px;font-size:0.85rem">🖌️ Try Drawing</button>
+               <button id="modal-draw-clear" class="btn btn-outline btn-sm" style="padding:6px 14px;font-size:0.85rem;display:none;border-color:#F87171;color:#F87171">🗑️ Clear</button>
+               <div id="modal-draw-score" style="display:none;font-size:0.9rem;font-weight:600;color:var(--gold);margin-left:auto"></div>
+            </div>
+
             <div class="stage-desc">${stage.description || ''}</div>
             <div class="stage-desc-ar">${stage.descriptionAr || ''}</div>
-            <div class="keyboard-hint">
+            <div class="keyboard-hint" style="margin-top:auto;padding-top:16px">
               <span class="kbd">←</span><span class="kbd">→</span> Navigate &nbsp;
               <span class="kbd">Esc</span> Close &nbsp;
               <span style="color:var(--gold-dim)">or swipe on mobile</span>
@@ -599,7 +605,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 drawCanvas.height = rect.height;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
-                ctx.lineWidth = 12; // thick ancient brush
+                // scale brush thickness relative to screen 
+                ctx.lineWidth = rect.width < 300 ? 5 : 8;
                 ctx.strokeStyle = 'rgba(212,175,55,0.85)'; // gold
                 ctx.shadowColor = 'rgba(212,175,55,0.5)';
                 ctx.shadowBlur = 10;
@@ -628,13 +635,71 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const stopDraw = () => {
+                if (isDrawing && drawMode) {
+                    isDrawing = false;
+                    scoreDrawing(); // Evaluate after every stroke
+                }
                 isDrawing = false;
+            };
+
+            const scoreLayer = document.getElementById('modal-draw-score');
+
+            const scoreDrawing = () => {
+                if (!scoreLayer) return;
+                const userData = ctx.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
+                let userPixels = 0;
+                for (let i = 3; i < userData.length; i += 4) if (userData[i] > 20) userPixels++;
+
+                if (userPixels < 50) {
+                    scoreLayer.textContent = '';
+                    scoreLayer.style.display = 'none';
+                    return;
+                }
+
+                const svgEl = document.getElementById('modal-stage-svg');
+                if (!svgEl) {
+                    scoreLayer.textContent = 'Traced!';
+                    scoreLayer.style.display = 'block';
+                    return;
+                }
+
+                // offscreen render to score
+                const offC = document.createElement('canvas');
+                offC.width = drawCanvas.width;
+                offC.height = drawCanvas.height;
+                const oCtx = offC.getContext('2d', { willReadFrequently: true });
+
+                let svgStr = new XMLSerializer().serializeToString(svgEl);
+                svgStr = svgStr.replace(/currentColor/g, 'black');
+
+                const img = new Image();
+                img.onload = () => {
+                    oCtx.drawImage(img, 0, 0, offC.width, offC.height);
+                    const svgData = oCtx.getImageData(0, 0, offC.width, offC.height).data;
+
+                    let overlap = 0, totalSvg = 0;
+                    for (let i = 3; i < svgData.length; i += 4) {
+                        const hasSvg = svgData[i] > 10;
+                        if (hasSvg) {
+                            totalSvg++;
+                            // check nearby 2 pixels in basic layout
+                            if (userData[i] > 10) overlap++;
+                        }
+                    }
+                    if (totalSvg === 0) return;
+                    let pct = Math.round((overlap / totalSvg) * 100 * 2.5); // 2.5 multiplier for leniency
+                    pct = Math.min(100, Math.max(0, pct));
+                    scoreLayer.textContent = `Accuracy: ${pct}%`;
+                    scoreLayer.style.display = 'block';
+                    if (pct === 100 && window.AudioFX) AudioFX.playDustChime();
+                };
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
             };
 
             drawBtn.addEventListener('click', () => {
                 drawMode = !drawMode;
                 if (drawMode) {
-                    drawBtn.innerHTML = '✕ Close Drawing';
+                    drawBtn.innerHTML = '✕ Close Canvas';
                     drawBtn.style.background = 'var(--gold)';
                     drawBtn.style.color = 'var(--surface)';
                     drawCanvas.style.opacity = '1';
@@ -647,11 +712,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (stageSvg) stageSvg.style.opacity = '0.3';
                 } else {
                     drawBtn.innerHTML = '🖌️ Try Drawing';
-                    drawBtn.style.background = 'rgba(0,0,0,0.5)';
-                    drawBtn.style.color = 'var(--text)';
+                    drawBtn.style.background = 'var(--surface)';
+                    drawBtn.style.color = 'var(--gold)';
                     drawCanvas.style.opacity = '0';
                     drawCanvas.style.pointerEvents = 'none';
                     drawClearBtn.style.display = 'none';
+                    if (scoreLayer) scoreLayer.style.display = 'none';
                     const stageImg = document.getElementById('modal-stage-img');
                     const stageSvg = document.getElementById('modal-stage-svg');
                     if (stageImg) stageImg.style.opacity = '1';
@@ -661,6 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             drawClearBtn.addEventListener('click', () => {
                 ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                if (scoreLayer) scoreLayer.style.display = 'none';
                 if (window.AudioFX) AudioFX.playDustChime();
             });
 
