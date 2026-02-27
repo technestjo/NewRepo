@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Panel � Ancient Scripts</title>
+    <title>Admin Panel — Ancient Scripts</title>
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/animations.css" />
@@ -12,14 +12,14 @@
 
 <body>
 
-    <!-- --- NAVBAR --- -->
+    <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
         <a href="index.html" class="nav-logo">
-            <span class="logo-symbol">??</span>
+            <span class="logo-symbol">𐤀</span>
             Ancient Scripts
         </a>
         <div class="nav-links" id="nav-links">
-            <a href="index.html">? Back to Site</a>
+            <a href="index.html">← Back to Site</a>
             <a href="assistant.html">AI Shrine</a>
             <a href="letters.html">Letters</a>
             <button id="logout-btn" class="btn btn-outline btn-sm nav-admin">Logout</button>
@@ -31,31 +31,31 @@
 
     <div class="admin-layout">
 
-        <!-- --- SIDEBAR --- -->
+        <!-- ═══ SIDEBAR ═══ -->
         <aside class="admin-sidebar">
             <div class="sidebar-section">
                 <div class="sidebar-label">Main</div>
                 <a href="#" class="sidebar-link" data-page="page-dashboard">
-                    <span class="icon">??</span> Dashboard
+                    <span class="icon">📊</span> Dashboard
                 </a>
                 <a href="#" class="sidebar-link" data-page="page-letters">
-                    <span class="icon">??</span> All Letters
+                    <span class="icon">𐤀</span> All Letters
                 </a>
                 <a href="#" class="sidebar-link" data-page="page-add" id="add-new-btn">
-                    <span class="icon">+</span> Add New Letter
+                    <span class="icon">＋</span> Add New Letter
                 </a>
             </div>
             <div class="sidebar-section">
                 <div class="sidebar-label">Data</div>
                 <a href="#" class="sidebar-link" id="export-btn">
-                    <span class="icon">?</span> Export JSON
+                    <span class="icon">⬇</span> Export JSON
                 </a>
                 <label class="sidebar-link" style="cursor:pointer">
-                    <span class="icon">?</span> Import JSON
+                    <span class="icon">⬆</span> Import JSON
                     <input type="file" id="import-file" accept=".json" class="sr-only" />
                 </label>
                 <a href="#" class="sidebar-link" id="reset-data-btn" style="color:var(--text-muted)">
-                    <span class="icon">?</span> Reset to Defaults
+                    <span class="icon">↺</span> Reset to Defaults
                 </a>
             </div>
             <div class="sidebar-section" style="margin-top:auto;border-top:1px solid var(--border);padding-top:20px">
@@ -66,25 +66,25 @@
             </div>
         </aside>
 
-        <!-- --- MAIN CONTENT --- -->
+        <!-- ═══ MAIN CONTENT ═══ -->
         <main class="admin-main">
 
-            <!-- --- PAGE: Dashboard --- -->
+            <!-- ─── PAGE: Dashboard ─── -->
             <div class="admin-page" id="page-dashboard">
                 <h1 class="admin-page-title">Dashboard</h1>
                 <p class="admin-page-subtitle">Overview of the Ancient Scripts archive.</p>
 
                 <div class="admin-stats">
                     <div class="admin-stat-card">
-                        <div class="stat-val" id="stat-total">�</div>
+                        <div class="stat-val" id="stat-total">—</div>
                         <div class="stat-lbl">Total Letters</div>
                     </div>
                     <div class="admin-stat-card">
-                        <div class="stat-val" id="stat-stages">�</div>
+                        <div class="stat-val" id="stat-stages">—</div>
                         <div class="stat-lbl">Total Stages</div>
                     </div>
                     <div class="admin-stat-card">
-                        <div class="stat-val" id="stat-civs">�</div>
+                        <div class="stat-val" id="stat-civs">—</div>
                         <div class="stat-lbl">Civilizations</div>
                     </div>
                 </div>
@@ -94,15 +94,15 @@
                 <div id="recent-letters"></div>
             </div>
 
-            <!-- --- PAGE: All Letters --- -->
+            <!-- ─── PAGE: All Letters ─── -->
             <div class="admin-page" id="page-letters">
                 <h1 class="admin-page-title">All Letters</h1>
-                <p class="admin-page-subtitle">Manage the letter archive � edit, delete, or add new entries.</p>
+                <p class="admin-page-subtitle">Manage the letter archive — edit, delete, or add new entries.</p>
 
                 <div class="admin-tools">
                     <div class="search-input-wrap" style="max-width:320px">
-                        <span class="search-icon">??</span>
-                        <input type="text" id="admin-search" class="search-input" placeholder="Search letters�"
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="admin-search" class="search-input" placeholder="Search letters…"
                             autocomplete="off" />
                     </div>
                     <button class="btn btn-primary btn-sm" id="add-new-from-list">+ Add New Letter</button>
@@ -127,7 +127,7 @@
                 </div>
             </div>
 
-            <!-- --- PAGE: Add / Edit Letter --- -->
+            <!-- ─── PAGE: Add / Edit Letter ─── -->
             <div class="admin-page" id="page-add">
                 <h1 class="admin-page-title" id="form-title">Add New Letter</h1>
                 <p class="admin-page-subtitle">Fill in the fields below. Stages with SVG drawings can be added after
@@ -142,7 +142,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="form-nameAr">Arabic Name *</label>
-                            <input type="text" id="form-nameAr" class="form-input" placeholder="e.g. ???" dir="rtl" />
+                            <input type="text" id="form-nameAr" class="form-input" placeholder="e.g. ألف" dir="rtl" />
                         </div>
                     </div>
 
@@ -153,12 +153,12 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="form-meaningAr">Meaning (AR)</label>
-                            <input type="text" id="form-meaningAr" class="form-input" placeholder="e.g. ??? / ????"
+                            <input type="text" id="form-meaningAr" class="form-input" placeholder="e.g. ثور / بقرة"
                                 dir="rtl" />
                         </div>
                     </div>
 
-                    <!-- -- Symbol Picker -- -->
+                    <!-- ── Symbol Picker ── -->
                     <div class="form-group"
                         style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
@@ -178,9 +178,9 @@
                         </div>
                         <div style="display:flex;align-items:center;gap:16px">
                             <div style="font-size:.75rem;color:var(--text-muted)">Or type manually:</div>
-                            <input type="text" id="form-phSymbol" class="form-input" placeholder="?? Phoenician"
+                            <input type="text" id="form-phSymbol" class="form-input" placeholder="𐤀 Phoenician"
                                 style="flex:1;max-width:160px" />
-                            <input type="text" id="form-arSymbol" class="form-input" placeholder="? Arabic" dir="rtl"
+                            <input type="text" id="form-arSymbol" class="form-input" placeholder="أ Arabic" dir="rtl"
                                 style="flex:1;max-width:160px" />
                         </div>
                         <div id="symbol-preview"
@@ -189,7 +189,7 @@
                         </div>
                     </div>
 
-                    <!-- -- Letter Image Canvas -- -->
+                    <!-- ── Letter Image Canvas ── -->
                     <div class="form-group"
                         style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px">
                         <label class="form-label" style="margin-bottom:12px">Draw Symbol <span
@@ -199,7 +199,7 @@
                                 <canvas id="form-image-canvas" width="160" height="160"
                                     style="background:var(--bg);border:1px solid var(--border-glow);border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
                                 <button type="button" id="form-image-clear" class="btn btn-sm btn-outline"
-                                    style="align-self: flex-start;">? Clear Drawing</button>
+                                    style="align-self: flex-start;">✕ Clear Drawing</button>
                             </div>
                             <div id="image-preview-area" style="display:flex;flex-direction:column;align-items:center;">
                                 <span style="font-size:.8rem;color:var(--text-muted);display:none;">Drawing saved</span>
@@ -221,7 +221,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="form-order">Display Order</label>
-                            <input type="number" id="form-order" class="form-input" placeholder="1�22" min="1"
+                            <input type="number" id="form-order" class="form-input" placeholder="1–22" min="1"
                                 max="999" />
                         </div>
                     </div>
@@ -229,23 +229,23 @@
                     <div class="form-group">
                         <label class="form-label" for="form-desc">Description (EN)</label>
                         <textarea id="form-desc" class="form-textarea"
-                            placeholder="Historical description of the letter�"></textarea>
+                            placeholder="Historical description of the letter…"></textarea>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="form-descAr">Description (AR)</label>
-                        <textarea id="form-descAr" class="form-textarea" placeholder="??? ?????? ?????�"
+                        <textarea id="form-descAr" class="form-textarea" placeholder="وصف تاريخي للحرف…"
                             dir="rtl"></textarea>
                     </div>
 
 
-                    <!-- -- Stage Manager -- -->
+                    <!-- ── Stage Manager ── -->
                     <div style="margin-bottom:28px">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
                             <div>
                                 <div
                                     style="font-family:'Cinzel',serif;font-size:1rem;color:var(--papyrus);margin-bottom:4px">
-                                    ?? Evolution Stages
+                                    🏺 Evolution Stages
                                 </div>
                                 <div style="font-size:.78rem;color:var(--text-muted)">
                                     Add the letter's evolution journey stages. Each stage can have a name, period,
@@ -272,10 +272,10 @@
         </main>
     </div>
 
-    <script src="js/database.js?v=3.1"></script>
-    <script src="js/admin.js?v=3.1"></script>
+    <script src="js/database.js?v=3.2"></script>
+    <script src="js/admin.js?v=3.2"></script>
     <script>
-        // Wire the "Add from list" button � delegates to admin.js sidebar handler
+        // Wire the "Add from list" button — delegates to admin.js sidebar handler
         document.getElementById('add-new-from-list')?.addEventListener('click', () => {
             document.getElementById('add-new-btn')?.click();
         });
