@@ -21,8 +21,9 @@ mongoose.connect(MONGODB_URI)
         // Auto-seed data on first boot if DB is empty
         try {
             const count = await mongoose.model('Letter').countDocuments();
-            if (count === 0) {
-                console.log('📦 Database is empty. Seeding original Phoenician letters...');
+            if (count < 8) {
+                console.log('📦 Database is empty or corrupted. Wiping and reseeding...');
+                await mongoose.model('Letter').deleteMany({});
                 const seedData = require('./seed.js');
                 await mongoose.model('Letter').insertMany(seedData);
                 console.log('🌱 Database seeded successfully!');
@@ -59,7 +60,7 @@ const letterSchema = new mongoose.Schema({
         imageBase64: String,
         svgContent: String
     }]
-}, { collection: 'letters' });
+}, { collection: 'letters', id: false });
 
 const Letter = mongoose.model('Letter', letterSchema);
 
