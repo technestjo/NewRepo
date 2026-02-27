@@ -8,7 +8,7 @@ const LetterDB = {
   ADMIN_KEY: 'ancient_scripts_admin',
   SESSION_KEY: 'ancient_admin_session',
   VERSION_KEY: 'ancient_scripts_version',
-  DB_VERSION: '2.4', // bump to force-reset stale localStorage
+  DB_VERSION: '2.5', // bump to force-reset stale localStorage
 
   DEFAULT_ADMIN: {
     username: btoa('MasterScribe'),
@@ -798,6 +798,7 @@ const LetterDB = {
     const storedVer = localStorage.getItem(this.VERSION_KEY);
     if (storedVer !== this.DB_VERSION) {
       localStorage.removeItem(this.STORAGE_KEY);
+      localStorage.removeItem(this.ADMIN_KEY); // Also remove old admin credentials
       localStorage.setItem(this.VERSION_KEY, this.DB_VERSION);
     }
     if (!localStorage.getItem(this.ADMIN_KEY)) {
