@@ -8,11 +8,11 @@ const LetterDB = {
   ADMIN_KEY: 'ancient_scripts_admin',
   SESSION_KEY: 'ancient_admin_session',
   VERSION_KEY: 'ancient_scripts_version',
-  DB_VERSION: '2.3', // bump to force-reset stale localStorage
+  DB_VERSION: '2.4', // bump to force-reset stale localStorage
 
   DEFAULT_ADMIN: {
-    username: btoa('ChronicleMaster'),
-    password: btoa('L3vant@rchive$99!')
+    username: btoa('MasterScribe'),
+    password: btoa('P@ssw0rd_Ancient$2026')
   },
 
   // ──────────────────────────────────────────────
