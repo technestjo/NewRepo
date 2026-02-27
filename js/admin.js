@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ────────────────────────────────────────────
     // MAIN LETTER DRAWING CANVAS
     // ────────────────────────────────────────────
-    const mainCanvas = document.getElementById('letter-thumbnail-canvas');
+    const mainCanvas = document.getElementById('form-image-canvas');
     if (mainCanvas) {
         setupAdminCanvas(mainCanvas, (dataUrl, svgStr) => {
             if (svgStr) {
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.clearMainCanvas = function () {
         currentThumbnailBase64 = null;
         if (stagesList.length > 0) stagesList[0].svgContent = '';
-        const mainCanvas = document.getElementById('letter-thumbnail-canvas');
+        const mainCanvas = document.getElementById('form-image-canvas');
         if (mainCanvas && mainCanvas.clearPath) {
             mainCanvas.clearPath();
         }
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#d4af37'; // gold
-        ctx.lineWidth = 6;
+        ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.shadowColor = 'rgba(212,175,55,0.5)';
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (isDrawing) {
                 isDrawing = false;
                 ctx.closePath();
-                const svgStr = pathData.trim() ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
+                const svgStr = pathData.trim() ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
                 if (onSave) onSave(canvas.toDataURL('image/png'), svgStr);
             }
         }
