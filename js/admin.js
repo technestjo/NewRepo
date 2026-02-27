@@ -220,17 +220,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.querySelectorAll('.stage-canvas-clear').forEach(btn => {
             btn.addEventListener('click', () => {
                 const i = +btn.dataset.idx;
-                stagesList[i].imageBase64 = null;
-                const canvas = document.getElementById(`stage-canvas-${i}`);
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
+                window.clearStageCanvas(i);
             });
         });
     }
 
     function e(str) { return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+    window.clearStageCanvas = function (idx) {
+        stagesList[idx].imageBase64 = null;
+        stagesList[idx].svgContent = '';
+        const canvas = document.getElementById(`stage-canvas-${idx}`);
+        if (canvas && canvas.clearPath) {
+            canvas.clearPath();
+        }
+    };
 
     document.getElementById('add-stage-btn')?.addEventListener('click', () => {
         stagesList.push(makeEmptyStage());
@@ -266,23 +270,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ────────────────────────────────────────────
     // MAIN LETTER DRAWING CANVAS
     // ────────────────────────────────────────────
-    const mainCanvas = document.getElementById('form-image-canvas');
+    const mainCanvas = document.getElementById('letter-thumbnail-canvas');
     if (mainCanvas) {
-        setupAdminCanvas(mainCanvas, (base64) => {
-            currentThumbnailBase64 = base64;
+        setupAdminCanvas(mainCanvas, (dataUrl, svgStr) => {
+            if (svgStr) {
+                const fullSvg = `<svg viewBox="0 0 250 200" xmlns="http://www.w3.org/2000/svg" color="#d4af37">${svgStr}</svg>`;
+                currentThumbnailBase64 = "data:image/svg+xml;utf8," + encodeURIComponent(fullSvg);
+                if (stagesList.length > 0) stagesList[0].svgContent = svgStr;
+            } else {
+                currentThumbnailBase64 = dataUrl;
+            }
             const prev = document.getElementById('image-preview-area');
             if (prev) prev.innerHTML = '<span style="font-size:.8rem;color:var(--gold);">✓ Drawing saved</span>';
         });
     }
 
     document.getElementById('form-image-clear')?.addEventListener('click', () => {
-        currentThumbnailBase64 = null;
-        if (mainCanvas) {
-            const ctx = mainCanvas.getContext('2d');
-            ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
-        }
-        clearImagePreview();
+        window.clearMainCanvas();
     });
+
+    window.clearMainCanvas = function () {
+        currentThumbnailBase64 = null;
+        if (stagesList.length > 0) stagesList[0].svgContent = '';
+        const mainCanvas = document.getElementById('letter-thumbnail-canvas');
+        if (mainCanvas && mainCanvas.clearPath) {
+            mainCanvas.clearPath();
+        }
+    }
+    clearImagePreview();
 
     function updateImagePreview() {
         const prev = document.getElementById('image-preview-area');
@@ -319,6 +334,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.shadowColor = 'rgba(212,175,55,0.5)';
         ctx.shadowBlur = 10;
         let isDrawing = false;
+        let pathData = '';
+
+        canvas.clearPath = function () {
+            pathData = '';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (onSave) onSave(null, '');
+        };
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -335,6 +357,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const pos = getPos(e);
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
+            pathData += `M ${pos.x},${pos.y} `;
             e.preventDefault();
         }
 
@@ -343,6 +366,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const pos = getPos(e);
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
+            pathData += `L ${pos.x},${pos.y} `;
             e.preventDefault();
         }
 
@@ -350,8 +374,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (isDrawing) {
                 isDrawing = false;
                 ctx.closePath();
-                // We use toDataURL so we can store it directly in the DB
-                if (onSave) onSave(canvas.toDataURL('image/png'));
+                const svgStr = pathData.trim() ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
+                if (onSave) onSave(canvas.toDataURL('image/png'), svgStr);
             }
         }
 
