@@ -82,7 +82,7 @@
             form.addEventListener('submit', e => {
                 e.preventDefault();
                 const username = document.getElementById('login-username').value.trim();
-                const password = pwInput.value;
+                const password = pwInput.value.trim();
 
                 btn.disabled = true;
                 btn.textContent = 'Verifying…';
