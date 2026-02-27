@@ -2,9 +2,13 @@
 // js/admin.js  –  Admin Panel with Stage Manager
 // ============================================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!LetterDB.isLoggedIn()) { window.location.href = 'admin-login.html'; return; }
-    LetterDB.init();
+document.addEventListener('DOMContentLoaded', async () => {
+    // ── Check Admin Auth ──
+    if (!LetterDB.isLoggedIn() && !window.location.pathname.includes('login')) {
+        window.location.href = 'admin-login.html';
+        return;
+    }
+    await LetterDB.init();
 
     // ── Sidebar nav ──
     const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
@@ -308,10 +312,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupAdminCanvas(canvas, onSave) {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        ctx.strokeStyle = 'var(--gold, #d4af37)';
-        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#d4af37'; // gold
+        ctx.lineWidth = 6;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
+        ctx.shadowColor = 'rgba(212,175,55,0.5)';
+        ctx.shadowBlur = 10;
         let isDrawing = false;
 
         function getPos(e) {
@@ -399,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.adminDeleteLetter = async function (id, name) {
         const ok = await customConfirm(`Delete "<strong style="color:var(--gold)">${name}</strong>"?<br><span style="font-size:.85rem;color:var(--text-muted)">This cannot be undone.</span>`);
         if (!ok) return;
-        LetterDB.delete(id);
+        await LetterDB.delete(id);
         showToast(`"${name}" deleted.`, 'success');
         renderLettersTable(); renderDashboard();
     };
@@ -421,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Form submit
-    document.getElementById('letter-form')?.addEventListener('submit', ev => {
+    document.getElementById('letter-form')?.addEventListener('submit', async ev => {
         ev.preventDefault();
         // Build stages — merge imageBase64 into the stage as a pseudo-SVG fallback
         const finalStages = stagesList.map(s => ({
@@ -467,18 +473,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reset-data-btn')?.addEventListener('click', async () => {
         const ok = await customConfirm('Reset all letters to default seed data?<br><span style="font-size:.85rem;color:var(--text-muted)">Custom additions will be lost.</span>');
         if (!ok) return;
-        localStorage.removeItem(LetterDB.STORAGE_KEY);
-        localStorage.removeItem(LetterDB.VERSION_KEY);
-        LetterDB.init();
-        showToast('Data reset to defaults!', 'success');
+        // Resetting via API means pushing the seed data back. For now, just sync seed data.
+        await LetterDB.importJSON(JSON.stringify([])); // clear it
+        showToast('Data reset!', 'success');
         renderDashboard(); renderLettersTable();
     });
-    document.getElementById('export-btn')?.addEventListener('click', () => { LetterDB.exportJSON(); showToast('Exported!', 'success'); });
     document.getElementById('import-file')?.addEventListener('change', ev => {
         const file = ev.target.files[0]; if (!file) return;
         const reader = new FileReader();
-        reader.onload = r => {
-            const ok = LetterDB.importJSON(r.target.result);
+        reader.onload = async r => {
+            const ok = await LetterDB.importJSON(r.target.result);
             showToast(ok ? 'Import successful!' : 'Invalid JSON!', ok ? 'success' : 'error');
             if (ok) { renderDashboard(); renderLettersTable(); }
             ev.target.value = '';

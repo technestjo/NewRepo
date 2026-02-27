@@ -111,8 +111,8 @@ async function shareLetter(letter) {
 }
 
 // ─────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-    LetterDB.init();
+document.addEventListener('DOMContentLoaded', async () => {
+    await LetterDB.init();
     Voice.loadVoices(); // load TTS voices (async on Chrome)
 
     // ── Nav ──
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stage0?.svgContent) {
             cardVisual = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">${stage0.svgContent}</svg>`;
         } else if (l.thumbnailBase64) {
-            cardVisual = `<img src="${l.thumbnailBase64}" style="width:90%;height:90%;object-fit:contain;border-radius:8px;" alt="${l.nameEn}">`;
+            cardVisual = `<img src="${l.thumbnailBase64}" style="width:90%;height:90%;object-fit:contain;border-radius:8px;filter: drop-shadow(0 0 8px rgba(212,175,55,0.6));" class="animate-glow" alt="${l.nameEn}">`;
         } else {
             cardVisual = `<span style="font-size:4rem;color:var(--gold);line-height:1">${l.phoenicianSymbol || '𐤀'}</span>`;
         }
@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             <div id="stage-content-wrapper" style="width:100%;height:100%">
               ${stage.imageBase64 && !stage.svgContent
-                ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">`
+                ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;filter: drop-shadow(0 0 8px rgba(212,175,55,0.6));" class="animate-glow" alt="${stage.nameEn || ''}">`
                 : (stage.textSymbol && !stage.svgContent)
                     ? `<div id="modal-stage-text" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:7rem;color:var(--gold);line-height:1;user-select:none;">${stage.textSymbol}</div>`
                     : `<svg id="modal-stage-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-draw animate-glow">${stage.svgContent || ''}</svg>`}
@@ -787,7 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contentWrapper.style.transform = 'scale(0.96)';
             setTimeout(() => {
                 contentWrapper.innerHTML = (stage.imageBase64 && !stage.svgContent)
-                    ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;" alt="${stage.nameEn || ''}">
+                    ? `<img id="modal-stage-img" src="${stage.imageBase64}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;filter: drop-shadow(0 0 8px rgba(212,175,55,0.6));" class="animate-glow" alt="${stage.nameEn || ''}">
                        <span class="stage-era-badge">${stage.period || ''}</span>`
                     : (stage.textSymbol && !stage.svgContent)
                         ? `<div id="modal-stage-text" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:7rem;color:var(--gold);line-height:1;user-select:none;">${stage.textSymbol}</div>
