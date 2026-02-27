@@ -189,25 +189,20 @@
                         </div>
                     </div>
 
-                    <!-- ── Letter Image Upload ── -->
+                    <!-- ── Letter Image Canvas ── -->
                     <div class="form-group"
                         style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px">
-                        <label class="form-label" style="margin-bottom:12px">Letter Image / Photo <span
-                                style="color:var(--text-muted);font-weight:400">(optional, max 500 KB)</span></label>
+                        <label class="form-label" style="margin-bottom:12px">Draw Symbol <span
+                                style="color:var(--text-muted);font-weight:400">(Draw the symbol here)</span></label>
                         <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
-                            <div>
-                                <input type="file" id="form-image-upload" accept="image/*" style="display:none" />
-                                <label for="form-image-upload" class="btn btn-outline"
-                                    style="cursor:pointer;display:inline-flex;align-items:center;gap:8px">
-                                    📷 Choose Image
-                                </label>
-                                <button type="button" id="form-image-clear" class="btn btn-sm btn-danger"
-                                    style="margin-left:8px">✕ Clear</button>
-                                <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px">Supports JPG, PNG,
-                                    WebP, GIF</p>
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                                <canvas id="form-image-canvas" width="160" height="160"
+                                    style="background:var(--bg);border:1px solid var(--border-glow);border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
+                                <button type="button" id="form-image-clear" class="btn btn-sm btn-outline"
+                                    style="align-self: flex-start;">✕ Clear Drawing</button>
                             </div>
-                            <div id="image-preview-area" style="display:flex;flex-direction:column;align-items:center">
-                                <span style="font-size:.8rem;color:var(--text-muted)">No image selected</span>
+                            <div id="image-preview-area" style="display:flex;flex-direction:column;align-items:center;">
+                                <span style="font-size:.8rem;color:var(--text-muted);display:none;">Drawing saved</span>
                             </div>
                         </div>
                     </div>

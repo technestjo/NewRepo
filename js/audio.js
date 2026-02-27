@@ -29,76 +29,101 @@ const AudioFX = (function () {
         return buffer;
     }
 
-    // A soft, deep string pluck (like an ancient Oud)
+    // Authentic Oud/Qanun Pluck (Layered Oscillators)
     function playStoneThud() {
         if (!ctx || isMuted) return;
-        const osc = ctx.createOscillator();
+
+        // Pluck body (fundamental)
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
         const gain = ctx.createGain();
 
-        // Use triangle for a softer, string-like tone
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, ctx.currentTime);
-        // Slight pitch decay mimicking a plucked string
-        osc.frequency.exponentialRampToValueAtTime(130, ctx.currentTime + 0.6);
+        osc1.type = 'triangle';
+        osc2.type = 'sine';
 
-        // Volume envelope
+        // Detune slightly for string thickness
+        osc1.frequency.setValueAtTime(130, ctx.currentTime);
+        osc2.frequency.setValueAtTime(132, ctx.currentTime);
+
+        // Fast pitch decay for the "pluck" transient
+        osc1.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.1);
+        osc2.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.1);
+
+        // Pluck volume envelope
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+        gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
 
-        osc.connect(gain);
+        osc1.connect(gain);
+        osc2.connect(gain);
         gain.connect(masterGain);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.9);
+
+        osc1.start(ctx.currentTime);
+        osc2.start(ctx.currentTime);
+        osc1.stop(ctx.currentTime + 1.25);
+        osc2.stop(ctx.currentTime + 1.25);
     }
 
-    // A soft, breathy flute sound (like a Ney)
+    // Authentic Ney Flute Breath
     function playStoneScrape() {
         if (!ctx || isMuted) return;
+
         const noise = ctx.createBufferSource();
-        noise.buffer = createNoiseBuffer(0.6);
+        noise.buffer = createNoiseBuffer(0.8);
 
         const filter = ctx.createBiquadFilter();
         filter.type = 'bandpass';
-        filter.frequency.value = 400;
-        filter.Q.value = 5;
+        filter.frequency.value = 450;
+        filter.Q.value = 15; // Higher Q for whistle resonance
 
-        // Slight breath flutter
-        filter.frequency.linearRampToValueAtTime(450, ctx.currentTime + 0.2);
-        filter.frequency.linearRampToValueAtTime(380, ctx.currentTime + 0.5);
+        // Adds breath flutter (LFO on the frequency)
+        const lfo = ctx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 6; // 6Hz vibrato
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 30; // pitch modulation depth
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        lfo.start();
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.15); // soft attack
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7); // breath fade
 
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(masterGain);
 
         noise.start(ctx.currentTime);
-        noise.stop(ctx.currentTime + 0.6);
+        noise.stop(ctx.currentTime + 0.8);
+        lfo.stop(ctx.currentTime + 0.8);
     }
 
-    // A gentle, resonant ancient bell (subtle chime)
+    // Ancient Bronze Bell (Multi-oscillator inharmonic)
     function playDustChime() {
         if (!ctx || isMuted) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
 
-        osc.connect(gain);
-        gain.connect(masterGain);
+        // Base frequency
+        const baseFreq = 500 + Math.random() * 50;
 
-        osc.type = 'sine';
-        // Gentle bell frequency with slight variation
-        osc.frequency.setValueAtTime(600 + Math.random() * 100, ctx.currentTime);
+        // Bell ratios for authentic metallic sound
+        const ratios = [1, 1.34, 1.83, 2.37];
+        const gainNode = ctx.createGain();
 
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.02); // strike
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5); // long ring
+        gainNode.connect(masterGain);
 
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 1.5);
+        ratios.forEach(ratio => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(baseFreq * ratio, ctx.currentTime);
+            osc.connect(gainNode);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 2.8);
+        });
     }
 
     function toggleMute() {

@@ -158,13 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
                      <textarea class="form-textarea stage-field" data-idx="${i}" data-key="descriptionAr" placeholder="وصف المرحلة…" dir="rtl" style="min-height:80px">${e(s.descriptionAr)}</textarea></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
-                <div>
-                    <label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Stage Image (optional)</label>
-                    <input type="file" id="stage-img-${i}" accept="image/*" style="display:none">
-                    <label for="stage-img-${i}" class="btn btn-sm btn-outline" style="cursor:pointer">📷 Choose Image</label>
-                    ${s.imageBase64 ? `<button type="button" class="btn btn-sm btn-danger stage-img-clear" data-idx="${i}" style="margin-left:6px">✕</button>` : ''}
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.08em">Draw Stage Symbol</label>
+                    <canvas id="stage-canvas-${i}" data-idx="${i}" width="160" height="160" style="background:var(--bg);border:1px solid var(--border-glow);border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
+                    <button type="button" class="btn btn-sm btn-outline stage-canvas-clear" data-idx="${i}" style="align-self: flex-start;">✕ Clear</button>
                 </div>
-                ${s.imageBase64 ? `<img src="${s.imageBase64}" style="max-width:100px;max-height:80px;border-radius:8px;border:1px solid var(--border-glow);object-fit:contain">` : '<span style="font-size:.75rem;color:var(--text-muted);align-self:flex-end">No image</span>'}
             </div>
         </div>`).join('');
 
@@ -200,18 +198,31 @@ document.addEventListener('DOMContentLoaded', () => {
         container.querySelectorAll('.stage-down').forEach(btn => {
             btn.addEventListener('click', () => { const i = +btn.dataset.idx;[stagesList[i + 1], stagesList[i]] = [stagesList[i], stagesList[i + 1]]; renderStagesEditor(); });
         });
-        container.querySelectorAll('[id^="stage-img-"]').forEach(fileInput => {
-            fileInput.addEventListener('change', ev => {
-                const i = +fileInput.id.replace('stage-img-', '');
-                const file = ev.target.files[0]; if (!file) return;
-                if (file.size > 800 * 1024) { showToast('Stage image too large — max 800 KB', 'error'); ev.target.value = ''; return; }
-                const reader = new FileReader();
-                reader.onload = r => { stagesList[i].imageBase64 = r.target.result; renderStagesEditor(); };
-                reader.readAsDataURL(file);
+        // Setup stage canvas drawing
+        container.querySelectorAll('canvas[id^="stage-canvas-"]').forEach(canvas => {
+            const i = +canvas.dataset.idx;
+            setupAdminCanvas(canvas, (base64) => {
+                stagesList[i].imageBase64 = base64;
             });
+            // Load existing image into canvas if available
+            if (stagesList[i].imageBase64) {
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                img.src = stagesList[i].imageBase64;
+            }
         });
-        container.querySelectorAll('.stage-img-clear').forEach(btn => {
-            btn.addEventListener('click', () => { stagesList[+btn.dataset.idx].imageBase64 = null; renderStagesEditor(); });
+
+        container.querySelectorAll('.stage-canvas-clear').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = +btn.dataset.idx;
+                stagesList[i].imageBase64 = null;
+                const canvas = document.getElementById(`stage-canvas-${i}`);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            });
         });
     }
 
@@ -249,30 +260,104 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-arSymbol')?.addEventListener('input', updateSymbolPreview);
 
     // ────────────────────────────────────────────
-    // THUMBNAIL IMAGE UPLOAD
+    // MAIN LETTER DRAWING CANVAS
     // ────────────────────────────────────────────
-    const imageInput = document.getElementById('form-image-upload');
-    imageInput?.addEventListener('change', ev => {
-        const file = ev.target.files[0]; if (!file) return;
-        if (file.size > 600 * 1024) { showToast('Image too large — max 600 KB', 'error'); ev.target.value = ''; return; }
-        const reader = new FileReader();
-        reader.onload = r => { currentThumbnailBase64 = r.target.result; updateImagePreview(); };
-        reader.readAsDataURL(file);
-    });
+    const mainCanvas = document.getElementById('form-image-canvas');
+    if (mainCanvas) {
+        setupAdminCanvas(mainCanvas, (base64) => {
+            currentThumbnailBase64 = base64;
+            const prev = document.getElementById('image-preview-area');
+            if (prev) prev.innerHTML = '<span style="font-size:.8rem;color:var(--gold);">✓ Drawing saved</span>';
+        });
+    }
+
     document.getElementById('form-image-clear')?.addEventListener('click', () => {
         currentThumbnailBase64 = null;
-        if (imageInput) imageInput.value = '';
+        if (mainCanvas) {
+            const ctx = mainCanvas.getContext('2d');
+            ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+        }
         clearImagePreview();
     });
+
     function updateImagePreview() {
         const prev = document.getElementById('image-preview-area');
-        if (prev) prev.innerHTML = currentThumbnailBase64
-            ? `<img src="${currentThumbnailBase64}" style="max-width:160px;max-height:120px;border-radius:var(--radius-md);border:1px solid var(--border-glow);object-fit:cover"><p style="font-size:.75rem;color:var(--gold);margin-top:6px">✓ Image loaded</p>`
-            : `<span style="font-size:.8rem;color:var(--text-muted)">No image selected</span>`;
+        if (currentThumbnailBase64) {
+            if (prev) prev.innerHTML = '<span style="font-size:.8rem;color:var(--gold);">✓ Drawing saved</span>';
+            if (mainCanvas) {
+                const ctx = mainCanvas.getContext('2d');
+                ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+                const img = new Image();
+                img.onload = () => ctx.drawImage(img, 0, 0, mainCanvas.width, mainCanvas.height);
+                img.src = currentThumbnailBase64;
+            }
+        } else {
+            if (prev) prev.innerHTML = `<span style="font-size:.8rem;color:var(--text-muted);display:none;">No drawing</span>`;
+            if (mainCanvas) {
+                const ctx = mainCanvas.getContext('2d');
+                ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            }
+        }
     }
     function clearImagePreview() {
         const prev = document.getElementById('image-preview-area');
-        if (prev) prev.innerHTML = `<span style="font-size:.8rem;color:var(--text-muted)">No image selected</span>`;
+        if (prev) prev.innerHTML = `<span style="font-size:.8rem;color:var(--text-muted);display:none;">No drawing</span>`;
+    }
+
+    // Canvas drawing helper function
+    function setupAdminCanvas(canvas, onSave) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = 'var(--gold, #d4af37)';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        let isDrawing = false;
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            e.preventDefault();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.closePath();
+                // We use toDataURL so we can store it directly in the DB
+                if (onSave) onSave(canvas.toDataURL('image/png'));
+            }
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+
+        // Touch events
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', stopDrawing);
     }
 
     // ────────────────────────────────────────────
