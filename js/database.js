@@ -860,7 +860,9 @@ const LetterDB = {
   // ──────────────────────────────────────────────
   // ADMIN AUTH
   // ──────────────────────────────────────────────
+  // ──────────────────────────────────────────────
   checkAuth(username, password) {
+    this.init();
     const stored = JSON.parse(localStorage.getItem(this.ADMIN_KEY) || '{}');
     return stored.username === btoa(username) && stored.password === btoa(password);
   },
