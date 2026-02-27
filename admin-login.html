@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login — Ancient Scripts</title>
+    <title>Admin Login � Ancient Scripts</title>
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/animations.css" />
@@ -17,14 +17,14 @@
 
             <!-- Logo -->
             <div class="login-logo">
-                <span class="symbol animate-float">𐤀</span>
+                <span class="symbol animate-float">??</span>
                 <h1>Admin Scribes</h1>
-                <p>Restricted Access — Ancient Scripts</p>
+                <p>Restricted Access � Ancient Scripts</p>
             </div>
 
             <!-- Error message -->
             <div class="login-error" id="login-error">
-                ✗ &nbsp; Incorrect username or password. Please try again.
+                ? &nbsp; Incorrect username or password. Please try again.
             </div>
 
             <!-- Form -->
@@ -41,7 +41,7 @@
                             placeholder="Enter password" style="padding-right:48px" required />
                         <button type="button" id="toggle-pw"
                             style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:1rem;background:none;border:none;cursor:pointer;padding:0"
-                            aria-label="Show/hide password">👁</button>
+                            aria-label="Show/hide password">??</button>
                     </div>
                 </div>
                 <button type="submit" class="login-btn" id="login-btn">
@@ -51,12 +51,12 @@
 
             <!-- Hint removed for security -->
             <p style="text-align:center;margin-top:8px">
-                <a href="index.html" style="color:var(--text-muted);font-size:0.8rem;">← Back to site</a>
+                <a href="index.html" style="color:var(--text-muted);font-size:0.8rem;">? Back to site</a>
             </p>
         </div>
     </main>
 
-    <script src="js/database.js?v=3.0"></script>
+    <script src="js/database.js?v=3.1"></script>
     <script src="js/particles.js"></script>
     <script src="js/cursor.js?v=3.0"></script>
     <script>
@@ -76,7 +76,7 @@
             // Show/hide password
             togglePw.addEventListener('click', () => {
                 pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
-                togglePw.textContent = pwInput.type === 'password' ? '👁' : '🙈';
+                togglePw.textContent = pwInput.type === 'password' ? '??' : '??';
             });
 
             form.addEventListener('submit', async function (e) {
@@ -85,13 +85,13 @@
                 const password = pwInput.value.trim();
 
                 btn.disabled = true;
-                btn.textContent = 'Verifying…';
+                btn.textContent = 'Verifying�';
 
                 // Simulate a tiny delay for feel
                 setTimeout(async () => {
                     const success = await LetterDB.login(username, password);
                     if (success) {
-                        btn.textContent = '✓ Authenticated!';
+                        btn.textContent = '? Authenticated!';
                         btn.style.background = 'linear-gradient(135deg,#3ECF5F,#1E8A3C)';
                         setTimeout(() => { window.location.href = 'admin.html'; }, 600);
                     } else {
