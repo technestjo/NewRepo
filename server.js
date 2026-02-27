@@ -15,7 +15,22 @@ app.use(express.json({ limit: '50mb' })); // Support large base64 image strings
 // ── MONGODB CONNECTION ──
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://technestjo_db_user:9jqhvhpzsK6NK4n6@cluster0.jy2rg0a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB Atlas'))
+    .then(async () => {
+        console.log('✅ Connected to MongoDB Atlas');
+
+        // Auto-seed data on first boot if DB is empty
+        try {
+            const count = await mongoose.model('Letter').countDocuments();
+            if (count === 0) {
+                console.log('📦 Database is empty. Seeding original Phoenician letters...');
+                const seedData = require('./seed.js');
+                await mongoose.model('Letter').insertMany(seedData);
+                console.log('🌱 Database seeded successfully!');
+            }
+        } catch (e) {
+            console.error('Failed to auto-seed database:', e.message);
+        }
+    })
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // ── MONGOOSE SCHEMA ──
