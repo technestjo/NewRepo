@@ -617,26 +617,46 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ctx.shadowBlur = 4;
             };
 
+            const getPos = (e) => {
+                const rect = drawCanvas.getBoundingClientRect();
+                const scaleX = drawCanvas.width / rect.width;
+                const scaleY = drawCanvas.height / rect.height;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            };
+
             const startDraw = (e) => {
                 if (!drawMode) return;
                 isDrawing = true;
-                ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
-                const rect = drawCanvas.getBoundingClientRect();
-                const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+                if (isEraser) {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.shadowBlur = 0;
+                    ctx.lineWidth = 15; // Thicker eraser
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = 'rgba(212,175,55,0.85)';
+                    ctx.shadowColor = 'rgba(212,175,55,0.5)';
+                    ctx.shadowBlur = 4;
+                    ctx.lineWidth = drawCanvas.width < 300 ? 2 : 3;
+                }
+
+                const pos = getPos(e);
                 ctx.beginPath();
-                ctx.moveTo(x, y);
+                ctx.moveTo(pos.x, pos.y);
                 e.preventDefault();
             };
 
             const draw = (e) => {
                 if (!isDrawing || !drawMode) return;
-                const rect = drawCanvas.getBoundingClientRect();
-                const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top;
-                ctx.lineTo(x, y);
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
-                if (window.AudioFX && Math.random() < 0.1) AudioFX.playStoneScrape(); // random scrape noise while drawing
+                if (!isEraser && window.AudioFX && Math.random() < 0.1) AudioFX.playStoneScrape();
                 e.preventDefault();
             };
 

@@ -362,11 +362,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
             };
         }
 
@@ -375,16 +377,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             const pos = getPos(e);
             const conf = getBrushConfig();
 
-            ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
-
-            ctx.strokeStyle = '#d4af37'; // gold
-            ctx.shadowColor = 'rgba(212,175,55,0.5)';
-            ctx.lineWidth = conf.width;
-            ctx.shadowBlur = conf.glow;
+            if (isEraser) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = conf.width * 2; // Make eraser slightly thicker than brush
+                ctx.shadowBlur = 0;
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = '#d4af37'; // gold
+                ctx.shadowColor = 'rgba(212,175,55,0.5)';
+                ctx.lineWidth = conf.width;
+                ctx.shadowBlur = conf.glow;
+            }
 
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
-            pathData += `M ${pos.x},${pos.y} `;
+            if (!isEraser) {
+                pathData += `M ${pos.x},${pos.y} `;
+            }
             e.preventDefault();
         }
 
@@ -393,7 +402,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const pos = getPos(e);
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
-            pathData += `L ${pos.x},${pos.y} `;
+            if (!isEraser) {
+                pathData += `L ${pos.x},${pos.y} `;
+            }
             e.preventDefault();
         }
 
