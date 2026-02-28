@@ -18,12 +18,11 @@ mongoose.connect(MONGODB_URI)
     .then(async () => {
         console.log('✅ Connected to MongoDB Atlas');
 
-        // Auto-seed data on first boot if DB is empty
+        // Auto-seed data on first boot if DB is entirely empty
         try {
             const count = await mongoose.model('Letter').countDocuments();
-            if (count < 8) {
-                console.log('📦 Database is empty or corrupted. Wiping and reseeding...');
-                await mongoose.model('Letter').deleteMany({});
+            if (count === 0) {
+                console.log('📦 Database is empty. Seeding...');
                 const seedData = require('./seed.js');
                 await mongoose.model('Letter').insertMany(seedData);
                 console.log('🌱 Database seeded successfully!');
