@@ -225,8 +225,12 @@
                             <div style="display:flex;flex-direction:column;gap:10px;">
                                 <canvas id="form-image-canvas" width="160" height="160"
                                     style="background:var(--bg);border:1px solid var(--border-glow);border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
-                                <button type="button" id="form-image-clear" class="btn btn-sm btn-outline"
-                                    style="align-self: flex-start;">✕ Clear Drawing</button>
+                                <div style="display:flex;gap:8px;align-self:flex-start;">
+                                    <button type="button" id="form-image-clear" class="btn btn-sm btn-outline">✕ Clear
+                                        Drawing</button>
+                                    <button type="button" id="form-image-eraser" class="btn btn-sm btn-outline">▱
+                                        Eraser</button>
+                                </div>
                             </div>
                             <div id="image-preview-area" style="display:flex;flex-direction:column;align-items:center;">
                                 <span style="font-size:.8rem;color:var(--text-muted);display:none;">Drawing saved</span>
@@ -299,8 +303,8 @@
         </main>
     </div>
 
-    <script src="js/database.js?v=3.3"></script>
-    <script src="js/admin.js?v=3.3"></script>
+    <script src="js/database.js?v=3.4"></script>
+    <script src="js/admin.js?v=3.4"></script>
     <script>
         // Wire the "Add from list" button — delegates to admin.js sidebar handler
         document.getElementById('add-new-from-list')?.addEventListener('click', () => {

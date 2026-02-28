@@ -494,6 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div style="margin:16px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                <button id="modal-draw-btn" class="btn btn-outline btn-sm" style="padding:6px 14px;font-size:0.85rem">🖌️ Try Drawing</button>
                <button id="modal-draw-clear" class="btn btn-outline btn-sm" style="padding:6px 14px;font-size:0.85rem;display:none;border-color:#F87171;color:#F87171">🗑️ Clear</button>
+               <button id="modal-draw-eraser" class="btn btn-outline btn-sm" style="padding:6px 14px;font-size:0.85rem;display:none;">▱ Eraser</button>
                <div id="modal-draw-score" style="display:none;font-size:0.9rem;font-weight:600;color:var(--gold);margin-left:auto"></div>
             </div>
 
@@ -595,11 +596,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Draw Canvas Feature
         const drawBtn = document.getElementById('modal-draw-btn');
         const drawClearBtn = document.getElementById('modal-draw-clear');
+        const drawEraserBtn = document.getElementById('modal-draw-eraser');
         const drawCanvas = document.getElementById('modal-draw-canvas');
         if (drawBtn && drawCanvas) {
             const ctx = drawCanvas.getContext('2d');
             let isDrawing = false;
             let drawMode = false;
+            let isEraser = false;
 
             const resizeCanvas = () => {
                 const rect = drawCanvas.parentElement.getBoundingClientRect();
@@ -617,6 +620,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const startDraw = (e) => {
                 if (!drawMode) return;
                 isDrawing = true;
+                ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
                 const rect = drawCanvas.getBoundingClientRect();
                 const x = (e.clientX || e.touches[0].clientX) - rect.left;
                 const y = (e.clientY || e.touches[0].clientY) - rect.top;

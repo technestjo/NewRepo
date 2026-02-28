@@ -165,7 +165,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div style="display:flex;flex-direction:column;gap:10px;">
                     <label style="font-size:.72rem;color:var(--gold-dim);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.08em">Draw Stage Symbol</label>
                     <canvas id="stage-canvas-${i}" data-idx="${i}" width="160" height="160" style="background:var(--bg);border:1px solid var(--border-glow);border-radius:8px;cursor:crosshair;touch-action:none;"></canvas>
-                    <button type="button" class="btn btn-sm btn-outline stage-canvas-clear" data-idx="${i}" style="align-self: flex-start;">✕ Clear</button>
+                    <div style="display:flex;gap:8px;align-self:flex-start;">
+                        <button type="button" class="btn btn-sm btn-outline stage-canvas-clear" data-idx="${i}">✕ Clear</button>
+                        <button type="button" class="btn btn-sm btn-outline stage-canvas-eraser" id="stage-canvas-eraser-${i}" data-idx="${i}">▱ Eraser</button>
+                    </div>
                 </div>
             </div>
         </div>`).join('');
@@ -207,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const i = +canvas.dataset.idx;
             setupAdminCanvas(canvas, (base64) => {
                 stagesList[i].imageBase64 = base64;
-            });
+            }, `stage-canvas-eraser-${i}`);
             // Load existing image into canvas if available
             if (stagesList[i].imageBase64) {
                 const ctx = canvas.getContext('2d');
@@ -324,13 +327,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Canvas drawing helper function
-    function setupAdminCanvas(canvas, onSave) {
+    function setupAdminCanvas(canvas, onSave, eraserBtnId) {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         let isDrawing = false;
         let pathData = '';
+
+        let isEraser = false;
+        if (eraserBtnId) {
+            const btn = document.getElementById(eraserBtnId);
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    isEraser = !isEraser;
+                    btn.style.background = isEraser ? 'var(--gold)' : '';
+                    btn.style.color = isEraser ? 'var(--bg)' : '';
+                });
+            }
+        }
 
         function getBrushConfig() {
             return {
@@ -359,6 +374,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             isDrawing = true;
             const pos = getPos(e);
             const conf = getBrushConfig();
+
+            ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+
             ctx.strokeStyle = '#d4af37'; // gold
             ctx.shadowColor = 'rgba(212,175,55,0.5)';
             ctx.lineWidth = conf.width;
