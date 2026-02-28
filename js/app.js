@@ -608,10 +608,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 // scale brush thickness relative to screen 
-                ctx.lineWidth = rect.width < 300 ? 5 : 8;
+                ctx.lineWidth = rect.width < 300 ? 2 : 3;
                 ctx.strokeStyle = 'rgba(212,175,55,0.85)'; // gold
                 ctx.shadowColor = 'rgba(212,175,55,0.5)';
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 4;
             };
 
             const startDraw = (e) => {

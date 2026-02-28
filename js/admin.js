@@ -327,14 +327,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     function setupAdminCanvas(canvas, onSave) {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        ctx.strokeStyle = '#d4af37'; // gold
-        ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.shadowColor = 'rgba(212,175,55,0.5)';
-        ctx.shadowBlur = 10;
         let isDrawing = false;
         let pathData = '';
+
+        function getBrushConfig() {
+            return {
+                width: parseInt(document.getElementById('brush-width')?.value || 2),
+                glow: parseInt(document.getElementById('brush-glow')?.value || 4)
+            };
+        }
 
         canvas.clearPath = function () {
             pathData = '';
@@ -355,6 +358,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         function startDrawing(e) {
             isDrawing = true;
             const pos = getPos(e);
+            const conf = getBrushConfig();
+            ctx.strokeStyle = '#d4af37'; // gold
+            ctx.shadowColor = 'rgba(212,175,55,0.5)';
+            ctx.lineWidth = conf.width;
+            ctx.shadowBlur = conf.glow;
+
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
             pathData += `M ${pos.x},${pos.y} `;
@@ -374,7 +383,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (isDrawing) {
                 isDrawing = false;
                 ctx.closePath();
-                const svgStr = pathData.trim() ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
+                const conf = getBrushConfig();
+                const svgStr = pathData.trim() ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="${conf.width}" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
                 if (onSave) onSave(canvas.toDataURL('image/png'), svgStr);
             }
         }
