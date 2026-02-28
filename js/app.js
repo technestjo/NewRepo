@@ -604,34 +604,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             let drawMode = false;
             let isEraser = false;
 
+            drawEraserBtn?.addEventListener('click', () => {
+                isEraser = !isEraser;
+                drawEraserBtn.style.background = isEraser ? 'var(--gold)' : '';
+                drawEraserBtn.style.color = isEraser ? 'var(--bg)' : '';
+            });
+
             const resizeCanvas = () => {
-                const rect = drawCanvas.parentElement.getBoundingClientRect();
-                drawCanvas.width = rect.width;
-                drawCanvas.height = rect.height;
+                // Ensure 1:1 DOM to Canvas pixel ratio mapping
+                drawCanvas.width = drawCanvas.clientWidth;
+                drawCanvas.height = drawCanvas.clientHeight;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
-                // scale brush thickness relative to screen 
-                ctx.lineWidth = rect.width < 300 ? 2 : 3;
+
+                // Calculate scale based on real width (e.g. max 300px)
+                const isMobile = drawCanvas.width < 250;
+                ctx.lineWidth = isMobile ? 2 : 3;
                 ctx.strokeStyle = 'rgba(212,175,55,0.85)'; // gold
                 ctx.shadowColor = 'rgba(212,175,55,0.5)';
-                ctx.shadowBlur = 4;
+                ctx.shadowBlur = isMobile ? 2 : 4;
             };
 
             const getPos = (e) => {
                 if (e.touches && e.touches.length > 0) {
                     const rect = drawCanvas.getBoundingClientRect();
-                    const scaleX = drawCanvas.width / rect.width;
-                    const scaleY = drawCanvas.height / rect.height;
                     return {
-                        x: (e.touches[0].clientX - rect.left) * scaleX,
-                        y: (e.touches[0].clientY - rect.top) * scaleY
+                        x: e.touches[0].clientX - rect.left,
+                        y: e.touches[0].clientY - rect.top
                     };
                 }
-                const scaleX = drawCanvas.width / drawCanvas.clientWidth;
-                const scaleY = drawCanvas.height / drawCanvas.clientHeight;
                 return {
-                    x: e.offsetX * scaleX,
-                    y: e.offsetY * scaleY
+                    x: e.offsetX,
+                    y: e.offsetY
                 };
             };
 
