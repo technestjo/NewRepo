@@ -618,14 +618,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             const getPos = (e) => {
-                const rect = drawCanvas.getBoundingClientRect();
-                const scaleX = drawCanvas.width / rect.width;
-                const scaleY = drawCanvas.height / rect.height;
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                if (e.touches && e.touches.length > 0) {
+                    const rect = drawCanvas.getBoundingClientRect();
+                    const scaleX = drawCanvas.width / rect.width;
+                    const scaleY = drawCanvas.height / rect.height;
+                    return {
+                        x: (e.touches[0].clientX - rect.left) * scaleX,
+                        y: (e.touches[0].clientY - rect.top) * scaleY
+                    };
+                }
+                const scaleX = drawCanvas.width / drawCanvas.clientWidth;
+                const scaleY = drawCanvas.height / drawCanvas.clientHeight;
                 return {
-                    x: (clientX - rect.left) * scaleX,
-                    y: (clientY - rect.top) * scaleY
+                    x: e.offsetX * scaleX,
+                    y: e.offsetY * scaleY
                 };
             };
 

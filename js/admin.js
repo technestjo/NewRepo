@@ -334,6 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.lineJoin = 'round';
         let isDrawing = false;
         let pathData = '';
+        let hasErased = false;
 
         let isEraser = false;
         if (eraserBtnId) {
@@ -356,24 +357,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         canvas.clearPath = function () {
             pathData = '';
+            hasErased = false;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (onSave) onSave(null, '');
         };
 
         function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            const scaleX = canvas.width / canvas.clientWidth;
+            const scaleY = canvas.height / canvas.clientHeight;
             return {
-                x: (clientX - rect.left) * scaleX,
-                y: (clientY - rect.top) * scaleY
+                x: e.offsetX * scaleX,
+                y: e.offsetY * scaleY
             };
         }
 
         function startDrawing(e) {
             isDrawing = true;
+            if (isEraser) hasErased = true;
             const pos = getPos(e);
             const conf = getBrushConfig();
 
@@ -413,7 +422,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 isDrawing = false;
                 ctx.closePath();
                 const conf = getBrushConfig();
-                const svgStr = pathData.trim() ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="${conf.width}" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
+                // If hasErased is true, we discard SVG and ONLY rely on the PNG raster!
+                const svgStr = (!hasErased && pathData.trim()) ? `<g><path d="${pathData.trim()}" fill="none" stroke="currentColor" stroke-width="${conf.width}" stroke-linecap="round" stroke-linejoin="round"/></g>` : '';
                 if (onSave) onSave(canvas.toDataURL('image/png'), svgStr);
             }
         }
