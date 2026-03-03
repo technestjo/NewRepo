@@ -18,18 +18,8 @@ mongoose.connect(MONGODB_URI)
     .then(async () => {
         console.log('✅ Connected to MongoDB Atlas');
 
-        // Auto-seed data on first boot if DB is entirely empty
-        try {
-            const count = await mongoose.model('Letter').countDocuments();
-            if (count === 0) {
-                console.log('📦 Database is empty. Seeding...');
-                const seedData = require('./seed.js');
-                await mongoose.model('Letter').insertMany(seedData);
-                console.log('🌱 Database seeded successfully!');
-            }
-        } catch (e) {
-            console.error('Failed to auto-seed database:', e.message);
-        }
+        // Auto-seed on boot removed to prevent overwriting deliberate user deletions
+        // To seed the database, use the admin panel "Reset to Defaults" button.
     })
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
@@ -62,6 +52,24 @@ const letterSchema = new mongoose.Schema({
 }, { collection: 'letters', id: false });
 
 const Letter = mongoose.model('Letter', letterSchema);
+
+const logSchema = new mongoose.Schema({
+    timestamp: { type: Date, default: Date.now },
+    action: String, // 'ADD', 'UPDATE', 'DELETE', 'RESET', 'SYNC'
+    target: String, // Name of the letter or 'Database'
+    details: String // Additional info
+}, { collection: 'admin_logs' });
+
+const AdminLog = mongoose.model('AdminLog', logSchema);
+
+// Helper function to create logs
+async function addLog(action, target, details) {
+    try {
+        await AdminLog.create({ action, target, details });
+    } catch (e) {
+        console.error('Failed to save log:', e);
+    }
+}
 
 // ── API ROUTES ──
 
@@ -101,6 +109,7 @@ app.post('/api/letters', async (req, res) => {
             id: Date.now() // Simple ID generation
         });
         const savedLetter = await newLetter.save();
+        await addLog('ADD', savedLetter.nameEn || 'Unknown Letter', `Added new letter with ID: ${savedLetter.id}`);
         res.status(201).json(savedLetter);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -116,6 +125,7 @@ app.put('/api/letters/:id', async (req, res) => {
             { new: true } // Returns the updated document
         );
         if (!updatedLetter) return res.status(404).json({ message: 'Letter not found' });
+        await addLog('UPDATE', updatedLetter.nameEn || 'Unknown Letter', `Updated letter properties`);
         res.json(updatedLetter);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -127,7 +137,21 @@ app.delete('/api/letters/:id', async (req, res) => {
     try {
         const deletedLetter = await Letter.findOneAndDelete({ id: parseInt(req.params.id) });
         if (!deletedLetter) return res.status(404).json({ message: 'Letter not found' });
+        await addLog('DELETE', deletedLetter.nameEn || 'Unknown Letter', `Deleted letter permanently`);
         res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Seed defaults from server seed.js
+app.post('/api/seed', async (req, res) => {
+    try {
+        await Letter.deleteMany({}); // Clear existing
+        const seedData = require('./seed.js');
+        const saved = await Letter.insertMany(seedData);
+        await addLog('RESET', 'Database', `Reset database to default seed data (${saved.length} letters)`);
+        res.json({ success: true, count: saved.length });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -141,7 +165,19 @@ app.post('/api/sync', async (req, res) => {
 
         await Letter.deleteMany({}); // Clear existing
         const saved = await Letter.insertMany(data);
+        await addLog('SYNC', 'Database', `Imported ${saved.length} letters from JSON file`);
         res.json({ success: true, count: saved.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get recent logs
+app.get('/api/logs', async (req, res) => {
+    try {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        const logs = await AdminLog.find().sort({ timestamp: -1 }).limit(100);
+        res.json(logs);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

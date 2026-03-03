@@ -139,5 +139,33 @@ const LetterDB = {
 
   logout() {
     sessionStorage.removeItem(this.SESSION_KEY);
+  },
+
+  async seedDefaults() {
+    try {
+      const res = await fetch('/api/seed', { method: 'POST' });
+      if (res.ok) {
+        await this.init(); // Refresh cache
+        return true;
+      }
+    } catch (e) {
+      console.error('Failed to seed defaults:', e);
+    }
+    return false;
+  },
+
+  // ──────────────────────────────────────────────
+  // ADMIN LOGS
+  // ──────────────────────────────────────────────
+  async getLogs() {
+    try {
+      const res = await fetch('/api/logs');
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.error('Failed to fetch logs:', e);
+    }
+    return [];
   }
 };

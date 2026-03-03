@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         sidebarLinks.forEach(l => l.classList.toggle('active', l.dataset.page === pageId));
         if (pageId === 'page-dashboard') renderDashboard();
         if (pageId === 'page-letters') renderLettersTable();
+        if (pageId === 'page-logs') renderLogsTable();
     }
     sidebarLinks.forEach(link => link.addEventListener('click', e => { e.preventDefault(); showPage(link.dataset.page); }));
     showPage('page-dashboard');
@@ -92,6 +93,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div></td></tr>`).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:32px">No letters found</td></tr>`;
     }
     document.getElementById('admin-search')?.addEventListener('input', e => renderLettersTable(e.target.value));
+
+    // ────────────────────────────────────────────
+    // ACTIVITY LOGS
+    // ────────────────────────────────────────────
+    async function renderLogsTable() {
+        const tbody = document.getElementById('logs-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px">Loading logs...</td></tr>`;
+
+        const logs = await LetterDB.getLogs();
+        if (logs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px">No activity recorded yet</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = logs.map(log => {
+            const date = new Date(log.timestamp);
+            const timeStr = date.toLocaleString();
+            let actionColor = 'var(--text-muted)';
+            if (log.action === 'ADD') actionColor = '#4ade80'; // Green
+            if (log.action === 'UPDATE') actionColor = '#60a5fa'; // Blue
+            if (log.action === 'DELETE') actionColor = '#f87171'; // Red
+            if (log.action === 'RESET' || log.action === 'SYNC') actionColor = 'var(--gold)'; // Gold
+
+            return `<tr>
+                <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:bold;background:rgba(255,255,255,0.05);color:${actionColor}">${log.action}</span></td>
+                <td><strong style="color:var(--papyrus)">${log.target}</strong></td>
+                <td style="color:var(--text-muted);font-size:0.85rem">${log.details}</td>
+                <td style="color:var(--text-muted);font-size:0.8rem">${timeStr}</td>
+            </tr>`;
+        }).join('');
+    }
+    document.getElementById('refresh-logs-btn')?.addEventListener('click', () => renderLogsTable());
 
     // ────────────────────────────────────────────
     // STAGE MANAGER (in-memory list of stages)
@@ -546,10 +580,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('reset-data-btn')?.addEventListener('click', async () => {
         const ok = await customConfirm('Reset all letters to default seed data?<br><span style="font-size:.85rem;color:var(--text-muted)">Custom additions will be lost.</span>');
         if (!ok) return;
-        // Resetting via API means pushing the seed data back. For now, just sync seed data.
-        await LetterDB.importJSON(JSON.stringify([])); // clear it
-        showToast('Data reset!', 'success');
-        renderDashboard(); renderLettersTable();
+        const success = await LetterDB.seedDefaults();
+        if (success) {
+            showToast('Data reset to defaults!', 'success');
+            renderDashboard(); renderLettersTable();
+        } else {
+            showToast('Failed to reset data', 'error');
+        }
     });
     document.getElementById('import-file')?.addEventListener('change', ev => {
         const file = ev.target.files[0]; if (!file) return;

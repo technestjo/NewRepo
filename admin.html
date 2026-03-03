@@ -43,6 +43,9 @@
                 <a href="#" class="sidebar-link" data-page="page-letters">
                     <span class="icon">𐤀</span> All Letters
                 </a>
+                <a href="#" class="sidebar-link" data-page="page-logs">
+                    <span class="icon">📝</span> Activity Logs
+                </a>
                 <a href="#" class="sidebar-link" data-page="page-add" id="add-new-btn">
                     <span class="icon">＋</span> Add New Letter
                 </a>
@@ -123,6 +126,33 @@
                             </tr>
                         </thead>
                         <tbody id="letters-tbody">
+                            <!-- Populated by admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ─── PAGE: Activity Logs ─── -->
+            <div class="admin-page" id="page-logs">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h1 class="admin-page-title">Activity Logs</h1>
+                        <p class="admin-page-subtitle">Track database modifications, additions, and deletions.</p>
+                    </div>
+                    <button class="btn btn-outline btn-sm" id="refresh-logs-btn">↻ Refresh</button>
+                </div>
+
+                <div style="overflow-x:auto; margin-top:20px;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Actions</th>
+                                <th>Target</th>
+                                <th>Details</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-tbody">
                             <!-- Populated by admin.js -->
                         </tbody>
                     </table>
