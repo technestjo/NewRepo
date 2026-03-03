@@ -18,6 +18,17 @@ mongoose.connect(MONGODB_URI)
     .then(async () => {
         console.log('✅ Connected to MongoDB Atlas');
 
+        try {
+            const count = await mongoose.model('Letter').countDocuments();
+            console.log(`\n======================================================`);
+            console.log(`📊 DATABASE STATUS: successfully loaded from MongoDB`);
+            console.log(`🛡️  Live Data verification: Found ${count} saved letters.`);
+            console.log(`📝 Letters and changes are safely stored in the cloud.`);
+            console.log(`======================================================\n`);
+        } catch (e) {
+            console.error('Failed to verify database letters:', e.message);
+        }
+
         // Auto-seed on boot removed to prevent overwriting deliberate user deletions
         // To seed the database, use the admin panel "Reset to Defaults" button.
     })

@@ -575,8 +575,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('cancel-form-btn')?.addEventListener('click', () => showPage('page-letters'));
 
     // ────────────────────────────────────────────
-    // RESET / IMPORT / EXPORT
+    // RESET / IMPORT / EXPORT (BACKUP)
     // ────────────────────────────────────────────
+    document.getElementById('export-btn')?.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        if (LetterDB.getAll().length === 0) {
+            showToast('Database is empty, nothing to export.', 'error');
+            return;
+        }
+        LetterDB.exportJSON();
+        showToast('Full Database Backup successfully downloaded!', 'success');
+    });
     document.getElementById('reset-data-btn')?.addEventListener('click', async () => {
         const ok = await customConfirm('Reset all letters to default seed data?<br><span style="font-size:.85rem;color:var(--text-muted)">Custom additions will be lost.</span>');
         if (!ok) return;
