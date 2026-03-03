@@ -174,8 +174,23 @@ app.post('/api/sync', async (req, res) => {
         const data = req.body;
         if (!Array.isArray(data)) return res.status(400).json({ error: 'Data must be an array' });
 
+        // Strip internal _ids from the backup so Mongoose regenerates them cleanly
+        // This prevents schema strictness issues where nested properties get dropped.
+        const cleanData = data.map(letter => {
+            const l = { ...letter };
+            delete l._id;
+            if (l.stages && Array.isArray(l.stages)) {
+                l.stages = l.stages.map(s => {
+                    const st = { ...s };
+                    delete st._id;
+                    return st;
+                });
+            }
+            return l;
+        });
+
         await Letter.deleteMany({}); // Clear existing
-        const saved = await Letter.insertMany(data);
+        const saved = await Letter.insertMany(cleanData);
         await addLog('SYNC', 'Database', `Imported ${saved.length} letters from JSON file`);
         res.json({ success: true, count: saved.length });
     } catch (err) {

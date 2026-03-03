@@ -496,6 +496,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         document.getElementById('form-nameEn').value = l.nameEn || '';
         document.getElementById('form-nameAr').value = l.nameAr || '';
+        const codeInput = document.getElementById('form-code');
+        if (codeInput) codeInput.value = l.code || '';
         document.getElementById('form-civ').value = l.civilization || 'Phoenician / Canaanite';
         document.getElementById('form-order').value = l.order || '';
         document.getElementById('form-meaning').value = l.meaning || '';
@@ -546,6 +548,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             imageBase64: s.imageBase64 || null
         }));
         const data = {
+            code: document.getElementById('form-code')?.value.trim() || 'NEW-000',
             nameEn: document.getElementById('form-nameEn').value.trim(),
             nameAr: document.getElementById('form-nameAr').value.trim(),
             civilization: document.getElementById('form-civ').value.trim(),
