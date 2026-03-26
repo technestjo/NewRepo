@@ -7,6 +7,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://technestjo_db_user:9jqhvhpzsK6NK4n6@cluster0.jy2rg0a.mongodb.net/AncientScriptsDB?retryWrites=true&w=majority&appName=Cluster0
+      - key: ADMIN_SEED_SECRET
+        value: seed-secret-2026
     headers:
       - path: /*
         name: X-Content-Type-Options

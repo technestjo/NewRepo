@@ -13,7 +13,9 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Support large base64 image strings
 
 // ── MONGODB CONNECTION ──
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://technestjo_db_user:9jqhvhpzsK6NK4n6@cluster0.jy2rg0a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// ⚠️ IMPORTANT: The database name 'AncientScriptsDB' MUST be in the URI.
+// Without it, MongoDB defaults to the 'test' database which can be shared/overwritten.
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://technestjo_db_user:9jqhvhpzsK6NK4n6@cluster0.jy2rg0a.mongodb.net/AncientScriptsDB?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(MONGODB_URI)
     .then(async () => {
         console.log('✅ Connected to MongoDB Atlas');
@@ -156,7 +158,13 @@ app.delete('/api/letters/:id', async (req, res) => {
 });
 
 // Seed defaults from server seed.js
+// 🔒 PROTECTED: Requires admin secret header to prevent accidental/unauthorized data wipes
 app.post('/api/seed', async (req, res) => {
+    const adminSecret = process.env.ADMIN_SEED_SECRET || 'seed-secret-2026';
+    const providedSecret = req.headers['x-admin-secret'];
+    if (providedSecret !== adminSecret) {
+        return res.status(403).json({ error: 'Forbidden: Invalid admin secret' });
+    }
     try {
         await Letter.deleteMany({}); // Clear existing
         const seedData = require('./seed.js');

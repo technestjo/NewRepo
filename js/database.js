@@ -148,7 +148,11 @@ const LetterDB = {
 
   async seedDefaults() {
     try {
-      const res = await fetch('/api/seed', { method: 'POST' });
+      // 🔒 Must send the admin secret header to authorize the database reset
+      const res = await fetch('/api/seed', {
+        method: 'POST',
+        headers: { 'x-admin-secret': 'seed-secret-2026' }
+      });
       if (res.ok) {
         await this.init(); // Refresh cache
         return true;
