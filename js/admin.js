@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (pageId === 'page-dashboard') renderDashboard();
         if (pageId === 'page-letters') renderLettersTable();
         if (pageId === 'page-logs') renderLogsTable();
+        if (pageId === 'page-recovery') {
+            renderBackupsList();
+            renderTrashList();
+        }
     }
     sidebarLinks.forEach(link => link.addEventListener('click', e => { e.preventDefault(); showPage(link.dataset.page); }));
     showPage('page-dashboard');
@@ -512,10 +516,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     window.adminDeleteLetter = async function (id, name) {
-        const ok = await customConfirm(`Delete "<strong style="color:var(--gold)">${name}</strong>"?<br><span style="font-size:.85rem;color:var(--text-muted)">This cannot be undone.</span>`);
+        const ok = await customConfirm(`Delete "<strong style="color:var(--gold)">${name}</strong>"?<br><span style="font-size:.85rem;color:var(--text-muted)">The letter will be moved to Trash and can be recovered anytime.</span>`);
         if (!ok) return;
         await LetterDB.delete(id);
-        showToast(`"${name}" deleted.`, 'success');
+        showToast(`"${name}" moved to trash — recover it anytime from Backups & Recovery.`, 'success');
         renderLettersTable(); renderDashboard();
     };
 
@@ -623,5 +627,77 @@ document.addEventListener('DOMContentLoaded', async () => {
         requestAnimationFrame(() => t.classList.add('show'));
         setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 500); }, 3200);
     }
+    // ────────────────────────────────────────────
+    // 🛡️ BACKUPS & RECOVERY PAGE
+    // ────────────────────────────────────────────
+    async function renderBackupsList() {
+        const tbody = document.getElementById('backups-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">Loading…</td></tr>`;
+        const backups = await LetterDB.getBackups();
+        if (!backups.length) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">No backups yet. Backups are created automatically before any Reset, Import, or Delete.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = backups.map(b => {
+            const date = new Date(b.createdAt).toLocaleString();
+            return `<tr>
+                <td style="color:var(--papyrus)">${b.label}</td>
+                <td style="color:var(--gold);text-align:center">${b.letterCount}</td>
+                <td style="color:var(--text-muted);font-size:.8rem">${date}</td>
+                <td><button class="btn btn-sm btn-outline" style="color:#4ade80;border-color:#4ade80" onclick="adminRestoreBackup('${b._id}','${(b.label||'').replace(/'/g,"\\'")}', ${b.letterCount})">↺ Restore</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function renderTrashList() {
+        const tbody = document.getElementById('trash-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">Loading…</td></tr>`;
+        const deleted = await LetterDB.getDeletedLetters();
+        if (!deleted.length) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">Trash is empty — no deleted letters.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = deleted.map(l => {
+            const date = new Date(l.deletedAt).toLocaleString();
+            return `<tr>
+                <td style="font-size:1.4rem">${l.phoenicianSymbol || '—'}</td>
+                <td><strong style="color:var(--papyrus)">${l.nameEn}</strong><br><span style="font-family:Amiri,serif;color:var(--gold);font-size:.9rem">${l.nameAr}</span></td>
+                <td style="color:var(--text-muted);font-size:.8rem">${date}</td>
+                <td><button class="btn btn-sm btn-outline" style="color:#4ade80;border-color:#4ade80" onclick="adminRecoverLetter(${l.id},'${(l.nameEn||'').replace(/'/g,"\\'")}')">↩ Recover</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.adminRestoreBackup = async function(backupId, label, count) {
+        const ok = await customConfirm(`Restore backup: "<strong style="color:var(--gold)">${label}</strong>"?<br><span style="font-size:.85rem;color:var(--text-muted)">This will replace the current ${LetterDB.getAll().length} letters with the ${count} letters from this snapshot.<br>Your current state will also be backed up first.</span>`);
+        if (!ok) return;
+        const result = await LetterDB.restoreBackup(backupId);
+        if (result) {
+            showToast(`✅ Restored! ${result.count} letters are back.`, 'success');
+            renderDashboard();
+            renderLettersTable();
+            renderBackupsList();
+        } else {
+            showToast('Restore failed. Try again.', 'error');
+        }
+    };
+
+    window.adminRecoverLetter = async function(id, name) {
+        const result = await LetterDB.recoverLetter(id);
+        if (result?.success) {
+            showToast(`"${name}" recovered successfully!`, 'success');
+            renderTrashList();
+            renderDashboard();
+            renderLettersTable();
+        } else {
+            showToast('Recovery failed. Try again.', 'error');
+        }
+    };
+
+    document.getElementById('refresh-backups-btn')?.addEventListener('click', () => renderBackupsList());
+    document.getElementById('refresh-trash-btn')?.addEventListener('click', () => renderTrashList());
+
     renderStagesEditor();
 });

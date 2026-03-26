@@ -169,12 +169,68 @@ const LetterDB = {
   async getLogs() {
     try {
       const res = await fetch('/api/logs');
-      if (res.ok) {
-        return await res.json();
-      }
+      if (res.ok) return await res.json();
     } catch (e) {
       console.error('Failed to fetch logs:', e);
     }
     return [];
+  },
+
+  // ──────────────────────────────────────────────
+  // 🛡️ BACKUP & RECOVERY
+  // ──────────────────────────────────────────────
+
+  // List all backup snapshots (newest first)
+  async getBackups() {
+    try {
+      const res = await fetch('/api/backups');
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch backups:', e);
+    }
+    return [];
+  },
+
+  // Restore the database to a saved snapshot
+  async restoreBackup(backupId) {
+    try {
+      const res = await fetch(`/api/restore/${backupId}`, { method: 'POST' });
+      if (res.ok) {
+        const result = await res.json();
+        await this.init(); // Refresh cache
+        return result;
+      }
+    } catch (e) {
+      console.error('Failed to restore backup:', e);
+    }
+    return null;
+  },
+
+  // Get soft-deleted letters (trash)
+  async getDeletedLetters() {
+    try {
+      const res = await fetch('/api/letters/deleted');
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch deleted letters:', e);
+    }
+    return [];
+  },
+
+  // Recover a soft-deleted letter from trash
+  async recoverLetter(id) {
+    try {
+      const res = await fetch(`/api/letters/${id}/recover`, { method: 'POST' });
+      if (res.ok) {
+        const result = await res.json();
+        if (result.success) {
+          this.lettersCache.push(result.letter); // Add back to cache
+        }
+        return result;
+      }
+    } catch (e) {
+      console.error('Failed to recover letter:', e);
+    }
+    return null;
   }
 };

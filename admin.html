@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 
 <head>
@@ -59,6 +59,9 @@
                     <span class="icon">⬆</span> Restore Backup (JSON)
                     <input type="file" id="import-file" accept=".json" class="sr-only" />
                 </label>
+                <a href="#" class="sidebar-link" data-page="page-recovery" style="color:#4ade80">
+                    <span class="icon">🛡️</span> Backups &amp; Recovery
+                </a>
                 <a href="#" class="sidebar-link" id="reset-data-btn" style="color:var(--text-muted)">
                     <span class="icon">↺</span> Reset to Defaults
                 </a>
@@ -328,6 +331,56 @@
                         <button type="button" class="btn btn-outline" id="cancel-form-btn">Cancel</button>
                     </div>
                 </form>
+            </div>
+
+            <!-- ─── PAGE: Backups & Recovery ─── -->
+            <div class="admin-page" id="page-recovery">
+                <h1 class="admin-page-title">🛡️ Backups &amp; Recovery</h1>
+                <p class="admin-page-subtitle">Restore the database to any previous snapshot, or recover deleted letters from the trash.</p>
+
+                <!-- Backups List -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="font-family:'Cinzel',serif;font-size:1rem;color:var(--papyrus);margin:0">💾 Auto-Saved Snapshots</h3>
+                    <button class="btn btn-outline btn-sm" id="refresh-backups-btn">↻ Refresh</button>
+                </div>
+                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:16px">A snapshot is automatically created before every Reset, Import, or Delete action.</p>
+                <div style="overflow-x:auto; margin-bottom:40px;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Letters</th>
+                                <th>Saved At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="backups-tbody">
+                            <tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Trash / Recycle Bin -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="font-family:'Cinzel',serif;font-size:1rem;color:var(--papyrus);margin:0">🗑️ Trash (Soft-Deleted Letters)</h3>
+                    <button class="btn btn-outline btn-sm" id="refresh-trash-btn">↻ Refresh</button>
+                </div>
+                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:16px">Deleted letters are never permanently erased. Click Recover to restore any letter.</p>
+                <div style="overflow-x:auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Deleted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trash-tbody">
+                            <tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </main>
