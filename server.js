@@ -15,7 +15,8 @@ app.use(express.json({ limit: '50mb' }));
 // ── MONGODB CONNECTION ──
 // ⚠️ IMPORTANT: The database name 'AncientScriptsDB' MUST be in the URI.
 // Without it, MongoDB defaults to the 'test' database which can be shared/overwritten.
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://ancientscripts_db_user:UzqP8l0iZ14C5kC7@cluster0.ylrbhmu.mongodb.net/?appName=Cluster0";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://ancientscripts_db_user:UzqP8l0iZ14C5kC7@cluster0.ylrbhmu.mongodb.net/AncientScriptsDB?retryWrites=true&w=majority&appName=Cluster0";
+
 
 mongoose.connect(MONGODB_URI)
     .then(async () => {
